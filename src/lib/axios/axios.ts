@@ -2,9 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { AppConfig } from '@/configs/api';
 import authConfig from '@/configs/auth';
 
-const API = axios.create();
-
-API.interceptors.request.use(
+axios.interceptors.request.use(
   config => {
     const token = localStorage.getItem(authConfig.storageTokenKeyName) || null;
 
@@ -21,27 +19,25 @@ API.interceptors.request.use(
   error => Promise.reject(error)
 );
 
-export const get = (path: string, params?: any) => API.get(path, { params });
+const get = (path: string, params?: any) => {
+  return axios.get(path, {
+    params: params
+  })
+}
 
-export const post = (path: string, data?: any): Promise<AxiosResponse> => {
+const post = (path: string, data?: any): Promise<AxiosResponse> => {
   const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {};
-  return API.post(path, data, { headers });
+  return axios.post(path, data, { headers });
 };
 
-export const put = (path: string, data?: any): Promise<AxiosResponse> => API.put(path, data);
+const put = (path: string, data?: any): Promise<AxiosResponse> => axios.put(path, data);
 
-export const patch = (path: string, data?: any): Promise<AxiosResponse> => API.patch(path, data);
+const patch = (path: string, data?: any): Promise<AxiosResponse> => axios.patch(path, data);
 
-export const del = (path: string): Promise<AxiosResponse> => API.delete(path);
+const del = (path: string): Promise<AxiosResponse> => axios.delete(path);
 
-export const postFile = (path: string, data?: any): Promise<AxiosResponse> => {
-  return API.post(path, data, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-};
-
-export const downloadFile = (path: string, filename: string) => {
-  return API.get(path, { responseType: 'blob' })
+const downloadFile = (path: string, filename: string) => {
+  return axios.get(path, { responseType: 'blob' })
     .then(response => {
       const blob = response.data;
       const url = window.URL.createObjectURL(blob);
@@ -55,4 +51,4 @@ export const downloadFile = (path: string, filename: string) => {
     .catch(console.error);
 };
 
-export default API;
+export { get, post, patch, put, del, downloadFile };

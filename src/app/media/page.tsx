@@ -1,8 +1,10 @@
 'use client';
+
 import { useEffect, useState } from 'react';
-import { getMedia, Media } from '@/types/media';
 import MediaList from '@/views/media/MediaList';
 import MediaModal from '@/views/media/MediaModal';
+import Media from '@/service/types/media';
+import { getMedia, deleteMedia } from '@/service/api/media';
 
 const MediaPage = () => {
     const [media, setMedia] = useState<Media[]>([]);
@@ -10,13 +12,26 @@ const MediaPage = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const loadData = async () => {
-        const res = await getMedia();
-        setMedia(res);
+        try {
+            const response = await getMedia();
+            setMedia(response.data.data);
+        } catch (err) {
+            console.error('Failed to load media:', err);
+        }
     };
 
     useEffect(() => {
         loadData();
     }, []);
+
+    const handleDelete = async (id: number) => {
+        try {
+            await deleteMedia(id);
+            setMedia((prev) => prev.filter((item) => item.id !== id));
+        } catch (err) {
+            console.error(`Failed to delete media ${id}:`, err);
+        }
+    };
 
     return (
         <div className="p-6">
@@ -34,22 +49,21 @@ const MediaPage = () => {
 
             <MediaList
                 items={media}
-                onEdit={(media) => {
-                    setSelected(media);
+                onEdit={(item) => {
+                    setSelected(item);
                     setIsOpen(true);
                 }}
-                onDelete={loadData}
-                openModal={() => setIsOpen(true)}
+                onDelete={handleDelete}
             />
 
             <MediaModal
                 isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
-                onSuccess={() => {
-                    setIsOpen(false);
-                    loadData();
-                }}
                 defaultData={selected}
+                onClose={() => setIsOpen(false)}
+                onSuccess={async () => {
+                    setIsOpen(false);
+                    await loadData();
+                }}
             />
         </div>
     );

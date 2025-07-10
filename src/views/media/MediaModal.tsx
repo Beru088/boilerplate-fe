@@ -6,16 +6,16 @@ import {
     Transition,
     TransitionChild,
 } from '@headlessui/react';
-import { Fragment, useEffect } from 'react';
-import {
-    createMedia,
-    CreateMediaInput,
-    Media,
-    MediaSchema,
-    updateMedia,
-} from '@/types/media';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Media from '@/service/types/media';
+import {
+    createMedia,
+    updateMedia,
+    CreateMediaData,
+    CreateMediaSchema,
+} from '@/service/api/media';
 
 interface MediaModalProps {
     isOpen: boolean;
@@ -35,41 +35,50 @@ export default function MediaModal({
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<CreateMediaInput>({
-        resolver: zodResolver(MediaSchema),
+    } = useForm<CreateMediaData>({
+        resolver: zodResolver(CreateMediaSchema),
         defaultValues: {
             title: '',
             description: '',
-            items: [],
         },
     });
+
+    const [files, setFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
     useEffect(() => {
         if (defaultData) {
             reset({
                 title: defaultData.title,
                 description: defaultData.description || '',
-                items: defaultData.items,
             });
         } else {
             reset();
         }
+
+        setFiles([]);
+        setPreviewUrls([]);
     }, [defaultData, reset]);
 
-    const onSubmit = async (values: CreateMediaInput) => {
-        if (defaultData) {
-            await updateMedia(defaultData.id, values);
+    const onSubmit = async (values: CreateMediaData) => {
+        if (!defaultData) {
+            await createMedia(values, files);
         } else {
-            await createMedia(values);
+            await updateMedia(defaultData.id, values, files);
         }
         onSuccess();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = e.target.files ? Array.from(e.target.files) : [];
+        setFiles(selected);
+        setPreviewUrls(selected.map((file) => URL.createObjectURL(file)));
     };
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={onClose}>
                 <TransitionChild
-                    as={Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0"
                     enterTo="opacity-100"
@@ -82,7 +91,6 @@ export default function MediaModal({
                 <div className="fixed inset-0 overflow-y-auto">
                     <div className="flex min-h-full items-center justify-center p-4 text-center">
                         <TransitionChild
-                            as={Fragment}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 scale-95"
                             enterTo="opacity-100 scale-100"
@@ -121,19 +129,45 @@ export default function MediaModal({
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">
-                                            Media Items
+                                            {defaultData
+                                                ? 'Add More Files (optional)'
+                                                : 'Upload Files'}
                                         </label>
                                         <input
-                                            {...register(`items.0.type`)}
-                                            placeholder="image or video"
+                                            type="file"
+                                            multiple
+                                            accept="image/*,video/*"
+                                            onChange={handleFileChange}
                                             className="w-full border px-3 py-2 rounded"
                                         />
-                                        <input
-                                            {...register(`items.0.url`)}
-                                            placeholder="Media URL"
-                                            className="w-full border px-3 py-2 mt-2 rounded"
-                                        />
                                     </div>
+
+                                    {previewUrls.length > 0 && (
+                                        <div className="flex gap-2 mt-2">
+                                            {previewUrls.map((url, idx) =>
+                                                url.includes('video') ||
+                                                url.match(
+                                                    /\.(mp4|mov|webm)$/i
+                                                ) ? (
+                                                    <video
+                                                        key={idx}
+                                                        src={url}
+                                                        className="w-16 h-16 rounded object-cover"
+                                                        controls
+                                                        muted
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        key={idx}
+                                                        src={url}
+                                                        className="w-16 h-16 rounded object-cover"
+                                                        alt={`Preview ${idx}`}
+                                                    />
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+
                                     <div className="text-right">
                                         <button
                                             type="submit"
