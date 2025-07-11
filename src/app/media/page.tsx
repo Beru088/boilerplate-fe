@@ -5,29 +5,28 @@ import MediaList from '@/views/media/MediaList';
 import MediaModal from '@/views/media/MediaModal';
 import Media from '@/service/types/media';
 import { getMedia, deleteMedia } from '@/service/api/media';
+import { useAsync } from '@/hooks/useAsync';
 
 const MediaPage = () => {
-    const [media, setMedia] = useState<Media[]>([]);
     const [selected, setSelected] = useState<Media | null>(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    const loadData = async () => {
-        try {
-            const response = await getMedia();
-            setMedia(response.data.data);
-        } catch (err) {
-            console.error('Failed to load media:', err);
-        }
-    };
+    const {
+        data: media,
+        loading,
+        error,
+        fetch: loadMedia,
+        setData,
+    } = useAsync<Media[]>(() => getMedia().then((res) => res.data.data));
 
     useEffect(() => {
-        loadData();
+        loadMedia();
     }, []);
 
     const handleDelete = async (id: number) => {
         try {
             await deleteMedia(id);
-            setMedia((prev) => prev.filter((item) => item.id !== id));
+            setData((prev) => prev?.filter((item) => item.id !== id) ?? []);
         } catch (err) {
             console.error(`Failed to delete media ${id}:`, err);
         }
@@ -35,6 +34,14 @@ const MediaPage = () => {
 
     return (
         <div className="p-6">
+            <div className="flex justify-start items-center">
+                <a
+                    className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm p-2"
+                    href="/"
+                    rel="noopener noreferrer">
+                    Go Back
+                </a>
+            </div>
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-xl font-bold">Media Library</h1>
                 <button
@@ -47,22 +54,27 @@ const MediaPage = () => {
                 </button>
             </div>
 
-            <MediaList
-                items={media}
-                onEdit={(item) => {
-                    setSelected(item);
-                    setIsOpen(true);
-                }}
-                onDelete={handleDelete}
-            />
+            {error && <p className="text-red-500">{error}</p>}
+            {loading ? (
+                <p className="text-gray-500">Loading media...</p>
+            ) : (
+                <MediaList
+                    items={media ?? []}
+                    onEdit={(item) => {
+                        setSelected(item);
+                        setIsOpen(true);
+                    }}
+                    onDelete={handleDelete}
+                />
+            )}
 
             <MediaModal
                 isOpen={isOpen}
                 defaultData={selected}
                 onClose={() => setIsOpen(false)}
                 onSuccess={async () => {
+                    await loadMedia();
                     setIsOpen(false);
-                    await loadData();
                 }}
             />
         </div>

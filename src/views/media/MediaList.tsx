@@ -1,7 +1,5 @@
-'use client';
-
-import { AppConfig } from '@/configs/api';
 import Media from '@/service/types/media';
+import { getMediaUrl } from '@/utils/helper';
 
 interface MediaListProps {
     items: Media[];
@@ -38,7 +36,7 @@ const MediaList = ({ items, onEdit, onDelete }: MediaListProps) => {
                                         />
                                     ) : (
                                         <img
-                                            src={`http://localhost:8000/uploads/803801ae-1a8f-48ab-a373-1e613352556c.jpg`}
+                                            src={getMediaUrl(item.url)}
                                             alt=""
                                             className="w-full h-full object-cover"
                                         />
