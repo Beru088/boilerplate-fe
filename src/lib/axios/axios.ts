@@ -27,6 +27,7 @@ const get = (path: string, params?: any) => {
 
 const post = (path: string, data?: any): Promise<AxiosResponse> => {
   const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {};
+
   return axios.post(path, data, { headers });
 };
 

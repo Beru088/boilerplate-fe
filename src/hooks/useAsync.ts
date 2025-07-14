@@ -13,7 +13,9 @@ export function useAsync<T>(asyncFn: AsyncFunction<T>) {
     try {
       const result = await asyncFn();
       setData(result);
+
       return result;
+
     } catch (err: any) {
       console.error(err);
       setError(err?.message || 'Something went wrong');
