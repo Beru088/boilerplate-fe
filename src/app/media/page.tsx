@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import MediaList from '@/views/media/MediaList'
-import MediaModal from '@/views/media/MediaModal'
+import MediaList from '@/app/media/MediaList'
+import MediaModal from '@/app/media/MediaModal'
 import Media from '@/service/types/media'
 import { getMedia, deleteMedia } from '@/service/api/media'
 import { useAsync } from '@/hooks/useAsync'
