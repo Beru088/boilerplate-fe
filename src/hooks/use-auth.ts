@@ -1,0 +1,98 @@
+'use client';
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { get, post } from '@/lib/axios/axios';
+import { useRouter } from 'next/navigation';
+import authConfig from '@/configs/auth';
+import { LoginCredentials } from '@/types/api';
+import { useEffect, useState } from 'react';
+
+export const useAuth = () => {
+    const queryClient = useQueryClient();
+    const router = useRouter();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const authApi = {
+        login: async (credentials: LoginCredentials) => {
+            const response = await post('/auth/login', credentials);
+            return response.data;
+        },
+
+        logout: async () => {
+            const response = await post('/auth/logout');
+            return response.data;
+        },
+
+        getCurrentUser: async () => {
+            const response = await get('/auth/me');
+            return response.data;
+        },
+    };
+
+    const loginMutation = useMutation({
+        mutationFn: authApi.login,
+        onSuccess: (data) => {
+            const user = data.data;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+            queryClient.invalidateQueries({ queryKey: ['user'] });
+
+            if (user.role === 'user') {
+                router.push('/explore');
+            } else {
+                router.push('/admin');
+            }
+        },
+        onError: (error) => {
+            console.error('Login failed:', error);
+        },
+    });
+
+    const logoutMutation = useMutation({
+        mutationFn: authApi.logout,
+        onSuccess: () => {
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('user');
+                localStorage.removeItem(authConfig.storageTokenKeyName);
+            }
+            queryClient.clear();
+            router.push('/');
+        },
+        onError: (error) => {
+            console.error('Logout failed:', error);
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('user');
+                localStorage.removeItem(authConfig.storageTokenKeyName);
+            }
+            queryClient.clear();
+            router.push('/');
+        },
+    });
+
+    const { data: userData, isLoading, error } = useQuery({
+        queryKey: ['user'],
+        queryFn: authApi.getCurrentUser,
+        retry: false,
+        staleTime: 1000 * 60 * 5,
+        enabled: isClient && typeof window !== 'undefined' && !!localStorage.getItem(authConfig.storageTokenKeyName),
+    });
+
+    const user = userData?.data;
+    const isAuthenticated = !!user;
+
+    return {
+        user,
+        isAuthenticated,
+        isLoading,
+        error,
+        login: loginMutation.mutate,
+        logout: logoutMutation.mutate,
+        isLoginLoading: loginMutation.isPending,
+        isLogoutLoading: logoutMutation.isPending,
+    };
+};
