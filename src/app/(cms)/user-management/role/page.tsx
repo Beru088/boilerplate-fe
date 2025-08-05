@@ -3,11 +3,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { UserCog, Plus, Search, Filter, Settings } from 'lucide-react'
-import { useState } from 'react'
+import { UserCog, Search, Filter, Settings } from 'lucide-react'
+// import { useState } from 'react'
 
 export default function RolesPage() {
-  const [search, setSearch] = useState('')
+  // const [search, setSearch] = useState('')
 
   return (
     <div className='space-y-6'>

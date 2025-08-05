@@ -45,6 +45,7 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
           isCurrentPage: true
         })
       }
+
       return breadcrumbs
     }
 
@@ -98,6 +99,7 @@ export function usePageTitle(): string {
   const segments = pathname.split('/').filter(Boolean)
   if (segments.length > 0) {
     const lastSegment = segments[segments.length - 1]
+
     return formatSegmentLabel(lastSegment)
   }
 

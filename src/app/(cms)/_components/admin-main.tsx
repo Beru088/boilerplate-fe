@@ -35,16 +35,14 @@ export function AdminMain({
   }[]
 }) {
   const pathname = usePathname()
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title ?? 'Platform'}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map(item => {
-          // Check if main item is active (exact match or has active sub-item)
           const isMainItemActive =
             pathname === item.url || item.items?.some(subItem => pathname === subItem.url) || item.isActive
-
-          // Determine if collapsible should be open
           const shouldBeOpen = isMainItemActive || item.isActive
 
           return (
