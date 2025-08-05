@@ -19,6 +19,21 @@ axios.interceptors.request.use(
   error => Promise.reject(error)
 );
 
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem(authConfig.storageTokenKeyName);
+      localStorage.removeItem('user');
+
+      if (typeof window !== 'undefined') {
+        window.location.href = '#';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 const get = (path: string, params?: any) => {
   return axios.get(path, {
     params: params
