@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { get, post } from '@/lib/axios/axios';
 import { useRouter } from 'next/navigation';
 import authConfig from '@/configs/auth';
-import { LoginCredentials } from '@/types/api';
+import { ILoginCredentials } from '@/types/api';
 import { useEffect, useState } from 'react';
 
 export const useAuth = () => {
@@ -17,7 +17,7 @@ export const useAuth = () => {
     }, []);
 
     const authApi = {
-        login: async (credentials: LoginCredentials) => {
+        login: async (credentials: ILoginCredentials) => {
             const response = await post('/auth/login', credentials);
             return response.data;
         },
@@ -36,13 +36,18 @@ export const useAuth = () => {
     const loginMutation = useMutation({
         mutationFn: authApi.login,
         onSuccess: (data) => {
-            const user = data.data;
+            const { user, token } = data;
             if (typeof window !== 'undefined') {
-                localStorage.setItem('user', JSON.stringify(user));
-            }
-            queryClient.invalidateQueries({ queryKey: ['user'] });
+                localStorage.removeItem('user');
+                localStorage.removeItem(authConfig.storageTokenKeyName);
 
-            if (user.role === 'user') {
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem(authConfig.storageTokenKeyName, token);
+            }
+            queryClient.removeQueries({ queryKey: ['user'] });
+            queryClient.setQueryData(['user'], { data: user });
+
+            if (user.role.name === 'viewer') {
                 router.push('/explore');
             } else {
                 router.push('/admin');

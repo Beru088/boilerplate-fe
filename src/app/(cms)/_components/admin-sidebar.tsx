@@ -1,93 +1,158 @@
 'use client'
 
-import { LayoutDashboard, Users, Files, Settings, LogOut } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import Image from 'next/image'
+import {
+  BookOpen,
+  FileBox,
+  FileChartColumn,
+  FileKey2,
+  LayoutDashboard,
+  LibraryBig,
+  Package,
+  PackageSearch,
+  Settings2,
+  Tags,
+  UserCog,
+  UserLock,
+  Users
+} from 'lucide-react'
+
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger
+  SidebarRail
 } from '@/components/ui/sidebar'
+import { AdminMain } from './admin-main'
+import { AdminUser } from './admin-user'
 import { useAuth } from '@/hooks/use-auth'
+import Image from 'next/image'
+import { Skeleton } from '@/components/ui/skeleton'
 
-const items = [
-  { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
-  { title: 'Users', url: '/user-management', icon: Users },
-  { title: 'Objects', url: '/object-management', icon: Files },
-  { title: 'Settings', url: '/settings', icon: Settings }
-]
+const data = {
+  navMain: [
+    { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
+    {
+      title: 'Archive Management',
+      url: '#',
+      icon: LibraryBig,
+      items: [
+        {
+          title: 'Object',
+          url: '/admin/archive/objects',
+          icon: Package
+        },
+        {
+          title: 'Object Category',
+          url: '/admin/archive/categories',
+          icon: PackageSearch
+        },
+        {
+          title: 'Object Tags',
+          url: '/admin/archive/tags',
+          icon: Tags
+        }
+      ]
+    },
+    {
+      title: 'User Management',
+      url: '#',
+      icon: Users,
+      items: [
+        {
+          title: 'Admin',
+          url: '/user-management/admin',
+          icon: UserLock
+        },
+        {
+          title: 'User',
+          url: '/user-management/user',
+          icon: Users
+        },
+        {
+          title: 'Role',
+          url: '/user-management/role',
+          icon: UserCog
+        }
+      ]
+    }
+  ],
+  navAdmin: [
+    {
+      title: 'Historia Logs',
+      url: '#',
+      icon: BookOpen,
+      items: [
+        {
+          title: 'Activity Logs',
+          url: '/admin/logs/activity',
+          icon: FileChartColumn
+        },
+        {
+          title: 'Change Logs',
+          url: '/admin/logs/changes',
+          icon: FileBox
+        }
+      ]
+    },
+    {
+      title: 'Master Data',
+      url: '#',
+      icon: Settings2,
+      items: [
+        {
+          title: 'Category',
+          url: '/admin/master/categories',
+          icon: FileKey2
+        },
+        {
+          title: 'Material',
+          url: '/admin/master/materials',
+          icon: FileKey2
+        },
+        {
+          title: 'Tags',
+          url: '/admin/master/tags',
+          icon: FileKey2
+        },
+        {
+          title: 'Location',
+          url: '/admin/master/locations',
+          icon: FileKey2
+        }
+      ]
+    }
+  ]
+}
 
-const AdminSidebar = () => {
-  const pathname = usePathname()
-  const { logout, isLogoutLoading } = useAuth()
-
-  const handleLogout = () => {
-    logout()
-  }
+export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user, isLoading } = useAuth()
 
   return (
-    <Sidebar className='bg-muted/40 group relative' collapsible='icon'>
-      <SidebarHeader className='px-[30px] py-6 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:pb-10'>
-        <div className='flex flex-col justify-center gap-2 text-center group-data-[collapsible=icon]:items-center'>
-          <p
-            className='bg-clip-text text-5xl font-semibold text-transparent transition-all group-data-[collapsible=icon]:text-xl'
-            style={{
-              background: 'var(--gradient-community, linear-gradient(180deg, #2662EC 0%, #163886 100%))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}
-          >
-            <span className='group-data-[collapsible=icon]:hidden'>Historia</span>
-            <Image
-              src='/images/logo/company/samudera-logo.png'
-              alt='Logo'
-              width={49}
-              height={49}
-              className='hidden group-data-[collapsible=icon]:block'
-            />
-          </p>
-        </div>
-        <SidebarTrigger className='absolute top-[62px] right-[-10px]' />
+    <Sidebar collapsible='icon' {...props}>
+      <SidebarHeader>
+        <SidebarMenuButton
+          size='lg'
+          className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+        >
+          <div className='bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center overflow-hidden rounded-md'>
+            <Image src='/images/logo/company/samudera-logo.png' alt='logo' width={42} height={32} />
+          </div>
+          <div className='grid flex-1 text-left text-sm leading-tight'>
+            <span className='truncate font-medium'>Samudera</span>
+            <span className='truncate text-xs'>Historia</span>
+          </div>
+        </SidebarMenuButton>
       </SidebarHeader>
-      <SidebarContent className='px-[30px] group-data-[collapsible=icon]:px-2'>
-        <SidebarMenu className='gap-2'>
-          {items.map((item, i) => {
-            const isActive = pathname === item.url
-
-            return (
-              <SidebarMenuItem key={i}>
-                <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
-                  <Link href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )
-          })}
-        </SidebarMenu>
+      <SidebarContent>
+        <AdminMain items={data.navMain} />
+        <AdminMain title='Admin Platform' items={data.navAdmin} />
       </SidebarContent>
-      <SidebarFooter className='px-[30px] group-data-[collapsible=icon]:px-2'>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={handleLogout}
-              disabled={isLogoutLoading}
-            >
-              <LogOut />
-              <span>{isLogoutLoading ? 'Logging out...' : 'Logout'}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarFooter>
+        {!user || isLoading ? <Skeleton className='h-12 w-full bg-gray-200' /> : <AdminUser user={user} />}
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   )
 }
-
-export default AdminSidebar
