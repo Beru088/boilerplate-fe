@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
-import { useAuth } from '@/hooks/use-auth'
+import { useAuth } from '@/lib/auth'
 import { ILoginCredentials } from '@/types/api'
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {

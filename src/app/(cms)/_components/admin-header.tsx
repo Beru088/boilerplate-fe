@@ -29,7 +29,7 @@ const AdminHeader = () => {
                   {breadcrumb.isCurrentPage ? (
                     <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink href={breadcrumb.href || '#'}>{breadcrumb.label}</BreadcrumbLink>
+                    <BreadcrumbLink href={breadcrumb.href}>{breadcrumb.label}</BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               </div>

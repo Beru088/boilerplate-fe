@@ -9,18 +9,18 @@ export interface BreadcrumbItem {
   isCurrentPage?: boolean
 }
 
-const breadcrumbConfig: Record<string, { label: string; parent?: string; category?: string }> = {
+const breadcrumbConfig: Record<string, { label: string; parent?: string }> = {
   // User Management
-  '/user-management': { label: 'User Management', category: 'management' },
-  '/user-management/admin': { label: 'Admin Users', parent: '/user-management', category: 'management' },
-  '/user-management/user': { label: 'Users', parent: '/user-management', category: 'management' },
-  '/user-management/role': { label: 'Roles', parent: '/user-management', category: 'management' },
+  '/user-management': { label: 'User Management' },
+  '/user-management/admin': { label: 'Admin Users', parent: '/user-management' },
+  '/user-management/user': { label: 'Users', parent: '/user-management' },
+  '/user-management/contributor': { label: 'Contributor Users', parent: '/user-management' },
 
   // Object Management
-  '/archive-management': { label: 'Archive Management', category: 'management' },
-  '/archive-management/object': { label: 'Object', category: 'management' },
-  '/archive-management/object-category': { label: 'Object Categories', category: 'management' },
-  '/archive-management/object-tag': { label: 'Object Tags', category: 'management' },
+  '/archive-management': { label: 'Archive Management' },
+  '/archive-management/object': { label: 'Object' },
+  '/archive-management/object-category': { label: 'Object Categories' },
+  '/archive-management/object-tag': { label: 'Object Tags' },
 }
 
 export function useBreadcrumbs(): BreadcrumbItem[] {
