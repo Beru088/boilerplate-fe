@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/sidebar'
 import { AdminMain } from './admin-main'
 import { AdminUser } from './admin-user'
-import { useAuth } from '@/hooks/use-auth'
+import { useAuth } from '@/lib/auth'
 import Image from 'next/image'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -56,30 +56,6 @@ const data = {
       ]
     },
     {
-      title: 'User Management',
-      url: '#',
-      icon: Users,
-      items: [
-        {
-          title: 'Admin',
-          url: '/user-management/admin',
-          icon: UserLock
-        },
-        {
-          title: 'User',
-          url: '/user-management/user',
-          icon: Users
-        },
-        {
-          title: 'Role',
-          url: '/user-management/role',
-          icon: UserCog
-        }
-      ]
-    }
-  ],
-  navAdmin: [
-    {
       title: 'Historia Logs',
       url: '#',
       icon: BookOpen,
@@ -93,6 +69,30 @@ const data = {
           title: 'Change Logs',
           url: '/admin/logs/changes',
           icon: FileBox
+        }
+      ]
+    }
+  ],
+  navAdmin: [
+    {
+      title: 'User Management',
+      url: '#',
+      icon: Users,
+      items: [
+        {
+          title: 'Admin',
+          url: '/user-management/admin',
+          icon: UserLock
+        },
+        {
+          title: 'Contributor',
+          url: '/user-management/contributor',
+          icon: UserCog
+        },
+        {
+          title: 'User',
+          url: '/user-management/user',
+          icon: Users
         }
       ]
     },

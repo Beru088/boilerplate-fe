@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { get, post } from '@/lib/axios/axios';
+import { service } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
 import authConfig from '@/configs/auth';
 import { ILoginCredentials } from '@/types/api';
@@ -18,19 +18,19 @@ export const useAuth = () => {
 
     const authApi = {
         login: async (credentials: ILoginCredentials) => {
-            const response = await post('/auth/login', credentials);
+            const response = await service.post('/auth/login', credentials);
 
             return response.data;
         },
 
         logout: async () => {
-            const response = await post('/auth/logout');
+            const response = await service.post('/auth/logout');
 
             return response.data;
         },
 
         getCurrentUser: async () => {
-            const response = await get('/auth/me');
+            const response = await service.get('/auth/me');
 
             return response.data;
         },
@@ -48,7 +48,7 @@ export const useAuth = () => {
                 localStorage.setItem(authConfig.storageTokenKeyName, token);
             }
             queryClient.removeQueries({ queryKey: ['user'] });
-            queryClient.setQueryData(['user'], { data: user });
+            queryClient.setQueryData(['me'], { data: user });
 
             if (user.role.name === 'viewer') {
                 router.push('/explore');
@@ -83,7 +83,7 @@ export const useAuth = () => {
     });
 
     const { data: userData, isLoading, error } = useQuery({
-        queryKey: ['user'],
+        queryKey: ['me'],
         queryFn: authApi.getCurrentUser,
         retry: false,
         staleTime: 1000 * 60 * 5,

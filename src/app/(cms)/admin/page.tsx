@@ -1,5 +1,7 @@
 import DashboardView from './_components/dashboard-view'
 
-export default function Dashboard() {
+const Dashboard = () => {
   return <DashboardView />
 }
+
+export default Dashboard

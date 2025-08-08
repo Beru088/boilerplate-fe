@@ -1,6 +1,8 @@
 'use client'
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles, Moon, Sun } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -13,16 +15,32 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
-import { useAuth } from '@/hooks/use-auth'
+import { useAuth } from '@/lib/auth'
 import { IUser } from '@/types/user'
 
 export function AdminUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar()
   const { logout, isLogoutLoading } = useAuth()
+  const { theme, setTheme, systemTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogout = () => {
     logout()
   }
+
+  const toggleTheme = () => {
+    if (!mounted) return
+    const currentTheme = theme === 'system' ? systemTheme : theme
+    const isDark = currentTheme === 'dark'
+    setTheme(isDark ? 'light' : 'dark')
+  }
+
+  const currentTheme = theme === 'system' ? systemTheme : theme
+  const isDark = currentTheme === 'dark'
 
   return (
     <SidebarMenu>
@@ -82,6 +100,10 @@ export function AdminUser({ user }: { user: IUser }) {
               <DropdownMenuItem>
                 <Bell />
                 Notifications
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleTheme} disabled={!mounted}>
+                {isDark ? <Sun className='h-4 w-4' /> : <Moon className='h-4 w-4' />}
+                {isDark ? 'Light Mode' : 'Dark Mode'}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

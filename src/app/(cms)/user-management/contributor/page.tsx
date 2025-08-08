@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { UserLock, Search, Filter, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
+import { UserCog, Search, Filter, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
 import { useUsers } from '@/features/users/api/user'
 import { Skeleton } from '@/components/ui/skeleton'
 import { IUserOption, IUser } from '@/types/user'
@@ -13,10 +13,10 @@ import UpdateUserForm from '@/features/users/components/update-user-form'
 import DeleteUser from '@/features/users/components/delete-user'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
-export default function AdminUsersPage() {
+export default function ContributorUsersPage() {
   const [userOptions, setUserOptions] = useState<IUserOption>({
     search: '',
-    role: 'admin',
+    role: 'contributor',
     status: '',
     skip: 0,
     take: 10
@@ -49,8 +49,8 @@ export default function AdminUsersPage() {
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-3xl font-bold'>Admin Users</h1>
-          <p className='text-muted-foreground'>Manage administrator accounts.</p>
+          <h1 className='text-3xl font-bold'>Contributor Users</h1>
+          <p className='text-muted-foreground'>Manage contributor accounts.</p>
         </div>
         <CreateUserForm onSuccess={handleSuccess} />
       </div>
@@ -70,10 +70,10 @@ export default function AdminUsersPage() {
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
-              <UserLock className='h-5 w-5' />
-              Administrator List
+              <UserCog className='h-5 w-5' />
+              Contributor List
             </CardTitle>
-            <CardDescription>Users with administrative privileges and system access.</CardDescription>
+            <CardDescription>Users with contributor privileges and log access.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -95,20 +95,22 @@ export default function AdminUsersPage() {
                 ))
               ) : !usersFetched ? (
                 <div className='py-8 text-center'>
-                  <p className='text-muted-foreground'>Loading admin users...</p>
+                  <p className='text-muted-foreground'>Loading contributor users...</p>
                 </div>
               ) : !users || users.length === 0 ? (
                 <div className='py-8 text-center'>
-                  <UserLock className='text-muted-foreground mx-auto mb-4 h-12 w-12' />
-                  <p className='text-muted-foreground'>No admin users found</p>
-                  <p className='text-muted-foreground mt-2 text-sm'>Create your first admin user to get started</p>
+                  <UserCog className='text-muted-foreground mx-auto mb-4 h-12 w-12' />
+                  <p className='text-muted-foreground'>No contributor users found</p>
+                  <p className='text-muted-foreground mt-2 text-sm'>
+                    Create your first contributor user to get started
+                  </p>
                 </div>
               ) : (
                 users.map((user: IUser) => (
                   <div key={user.id} className='flex items-center justify-between rounded-lg border p-4'>
                     <div className='flex items-center gap-3'>
                       <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
-                        <UserLock className='text-primary h-5 w-5' />
+                        <UserCog className='text-primary h-5 w-5' />
                       </div>
                       <div>
                         <p className='font-medium'>{user.name}</p>
@@ -116,7 +118,7 @@ export default function AdminUsersPage() {
                       </div>
                     </div>
                     <div className='flex items-center gap-2'>
-                      <Badge variant='secondary'>{user.role.name || 'Admin'}</Badge>
+                      <Badge variant='secondary'>{user.role.name || 'Contributor'}</Badge>
                       <Badge>{user.deletedAt ? 'Inactive' : 'Active'}</Badge>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
