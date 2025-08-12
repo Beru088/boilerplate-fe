@@ -28,7 +28,6 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Attempting login with:', formData)
     login(formData)
   }
 

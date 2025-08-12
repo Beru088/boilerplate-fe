@@ -29,7 +29,6 @@ export default function AdminUsersPage() {
   const { users, usersLoading, usersFetched } = useUsers(userOptions)
 
   const handleSuccess = () => {
-    // The query will automatically refetch due to cache invalidation
     setShowEditDialog(false)
     setShowDeleteDialog(false)
     setSelectedUser(null)
