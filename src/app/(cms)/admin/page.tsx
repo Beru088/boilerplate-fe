@@ -1,7 +1,5 @@
-import DashboardView from './_components/dashboard-view'
-
 const Dashboard = () => {
-  return <DashboardView />
+  return null
 }
 
 export default Dashboard

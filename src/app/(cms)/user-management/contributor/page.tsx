@@ -12,6 +12,7 @@ import CreateUserForm from '@/features/users/components/create-user-form'
 import UpdateUserForm from '@/features/users/components/update-user-form'
 import DeleteUser from '@/features/users/components/delete-user'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import ListPagination from '@/components/shared/pagination'
 
 export default function ContributorUsersPage() {
   const [userOptions, setUserOptions] = useState<IUserOption>({
@@ -26,7 +27,8 @@ export default function ContributorUsersPage() {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const { users, usersLoading, usersFetched } = useUsers(userOptions)
+  const { users, usersLoading, usersFetched, pagination } = useUsers(userOptions)
+  const totalPages = pagination?.totalPages ?? 1
 
   const handleSuccess = () => {
     // The query will automatically refetch due to cache invalidation
@@ -106,43 +108,54 @@ export default function ContributorUsersPage() {
                   </p>
                 </div>
               ) : (
-                users.map((user: IUser) => (
-                  <div key={user.id} className='flex items-center justify-between rounded-lg border p-4'>
-                    <div className='flex items-center gap-3'>
-                      <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
-                        <UserCog className='text-primary h-5 w-5' />
+                <>
+                  {users.map((user: IUser) => (
+                    <div key={user.id} className='flex items-center justify-between rounded-lg border p-4'>
+                      <div className='flex items-center gap-3'>
+                        <div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
+                          <UserCog className='text-primary h-5 w-5' />
+                        </div>
+                        <div>
+                          <p className='font-medium'>{user.name}</p>
+                          <p className='text-muted-foreground text-sm'>{user.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className='font-medium'>{user.name}</p>
-                        <p className='text-muted-foreground text-sm'>{user.email}</p>
+                      <div className='flex items-center gap-2'>
+                        <Badge variant='secondary'>{user.role.name || 'Contributor'}</Badge>
+                        <Badge>{user.deletedAt ? 'Inactive' : 'Active'}</Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant='ghost' size='sm'>
+                              <MoreHorizontal className='h-4 w-4' />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align='end'>
+                            <DropdownMenuItem onClick={() => handleEdit(user)}>
+                              <Edit className='mr-2 h-4 w-4' />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(user)}
+                              className='text-red-600 focus:text-red-600'
+                            >
+                              <Trash2 className='mr-2 h-4 w-4' />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
-                    <div className='flex items-center gap-2'>
-                      <Badge variant='secondary'>{user.role.name || 'Contributor'}</Badge>
-                      <Badge>{user.deletedAt ? 'Inactive' : 'Active'}</Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant='ghost' size='sm'>
-                            <MoreHorizontal className='h-4 w-4' />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
-                          <DropdownMenuItem onClick={() => handleEdit(user)}>
-                            <Edit className='mr-2 h-4 w-4' />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(user)}
-                            className='text-red-600 focus:text-red-600'
-                          >
-                            <Trash2 className='mr-2 h-4 w-4' />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))
+                  ))}
+
+                  <ListPagination
+                    skip={userOptions.skip}
+                    take={userOptions.take}
+                    totalPages={totalPages}
+                    itemCount={users.length}
+                    onChangeSkip={nextSkip => setUserOptions(prev => ({ ...prev, skip: nextSkip }))}
+                    className='mt-4'
+                  />
+                </>
               )}
             </div>
           </CardContent>
