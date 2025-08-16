@@ -5,5 +5,15 @@ const path = require('path')
 
 module.exports = {
   reactStrictMode: false,
-  devIndicators: false
+  devIndicators: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
+        pathname: '/media-storage/**'
+      }
+    ]
+  }
 }

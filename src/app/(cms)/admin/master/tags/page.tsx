@@ -1,0 +1,145 @@
+'use client'
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { formatIsoDate } from '@/utils/helper'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTags } from '@/features/master-data/api/tags'
+import CreateTagForm from '@/features/master-data/components/tags/create-tag-form'
+import UpdateTagForm from '@/features/master-data/components/tags/update-tag-form'
+import DeleteTag from '@/features/master-data/components/tags/delete-tag'
+import { Button } from '@/components/ui/button'
+import { Filter, MoreHorizontal, Search } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useMemo, useState } from 'react'
+import type { TagRow } from '@/types/object'
+import ListPagination from '@/components/shared/pagination'
+import { Skeleton } from '@/components/ui/skeleton'
+
+const AdminMasterTagsPage = () => {
+  const { tags, tagsLoading } = useTags()
+  const [selected, setSelected] = useState<TagRow | null>(null)
+  const [openEdit, setOpenEdit] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 20
+  const totalPages = useMemo(() => Math.max(1, Math.ceil((tags?.length || 0) / pageSize)), [tags])
+  const paged = useMemo(() => {
+    const start = (currentPage - 1) * pageSize
+    return tags.slice(start, start + pageSize)
+  }, [tags, currentPage])
+
+  return (
+    <div className='space-y-6'>
+      <div className='flex items-center justify-between'>
+        <div>
+          <h1 className='text-3xl font-bold'>Tags</h1>
+          <p className='text-muted-foreground'>Browse master tags list.</p>
+        </div>
+        <CreateTagForm />
+      </div>
+
+      <div className='flex items-center gap-4'>
+        <Button variant='outline'>
+          <Search className='mr-2 h-4 w-4' />
+          Search
+        </Button>
+        <Button variant='outline'>
+          <Filter className='mr-2 h-4 w-4' />
+          Filter
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tags</CardTitle>
+          <CardDescription>All master tags</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {tagsLoading ? (
+            <div className='space-y-4'>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className='flex items-center justify-between rounded-lg border p-2'>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-4 w-24' />
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-16' />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : tags.length === 0 ? (
+            <div className='text-muted-foreground py-8 text-center'>No tags found</div>
+          ) : (
+            <div className='grid gap-2'>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className='text-center'>No</TableHead>
+                    <TableHead className='text-center'>Name</TableHead>
+                    <TableHead className='text-center'>Created</TableHead>
+                    <TableHead className='text-center'>Updated</TableHead>
+                    <TableHead className='text-right'>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paged.map((tag, idx) => (
+                    <TableRow key={tag.id}>
+                      <TableCell className='text-center'>{(currentPage - 1) * pageSize + idx + 1}</TableCell>
+                      <TableCell className='text-center font-medium'>{tag.name}</TableCell>
+                      <TableCell className='text-center'>{formatIsoDate(tag.createdAt)}</TableCell>
+                      <TableCell className='text-center'>{formatIsoDate(tag.updatedAt)}</TableCell>
+                      <TableCell className='text-right'>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant='ghost' size='sm'>
+                              <MoreHorizontal className='h-4 w-4' />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align='end'>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelected(tag)
+                                setOpenEdit(true)
+                              }}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className='text-red-600'
+                              onClick={() => {
+                                setSelected(tag)
+                                setOpenDelete(true)
+                              }}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <ListPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className='mt-4'
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {selected && (
+        <UpdateTagForm tag={selected} open={openEdit} onOpenChange={setOpenEdit} onSuccess={() => setSelected(null)} />
+      )}
+      {selected && (
+        <DeleteTag tag={selected} open={openDelete} onOpenChange={setOpenDelete} onSuccess={() => setSelected(null)} />
+      )}
+    </div>
+  )
+}
+
+export default AdminMasterTagsPage

@@ -16,11 +16,17 @@ const breadcrumbConfig: Record<string, { label: string; parent?: string }> = {
   '/user-management/user': { label: 'Users', parent: '/user-management' },
   '/user-management/contributor': { label: 'Contributor Users', parent: '/user-management' },
 
-  // Object Management
-  '/archive-management': { label: 'Archive Management' },
-  '/archive-management/object': { label: 'Object' },
-  '/archive-management/object-category': { label: 'Object Categories' },
-  '/archive-management/object-tag': { label: 'Object Tags' },
+  // Archive Management (admin)
+  '/admin/archive': { label: 'Archive Management', parent: '/admin' },
+  '/admin/archive/objects': { label: 'Objects', parent: '/admin/archive' },
+  '/admin/archive/objects/[id]': { label: 'Object Detail', parent: '/admin/archive/objects' },
+  '/admin/archive/objects/create': { label: 'Create Object', parent: '/admin/archive/objects' },
+  '/admin/archive/objects/[id]/edit': { label: 'Edit Object', parent: '/admin/archive/objects' },
+
+  // Master Data
+  '/admin/master/categories': { label: 'Master Data - Category', parent: '/admin' },
+  '/admin/master/materials': { label: 'Master Data - Material', parent: '/admin' },
+  '/admin/master/tags': { label: 'Master Data - Tags', parent: '/admin' }
 }
 
 export function useBreadcrumbs(): BreadcrumbItem[] {
@@ -28,11 +34,6 @@ export function useBreadcrumbs(): BreadcrumbItem[] {
 
   return useMemo(() => {
     const breadcrumbs: BreadcrumbItem[] = []
-
-    breadcrumbs.push({
-      label: 'CMS',
-      href: '/admin'
-    })
 
     const currentConfig = breadcrumbConfig[pathname]
 

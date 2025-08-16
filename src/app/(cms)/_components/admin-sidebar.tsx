@@ -32,26 +32,20 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 const data = {
   navMain: [
-    { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
     {
       title: 'Archive Management',
       url: '#',
       icon: LibraryBig,
       items: [
         {
-          title: 'Object',
+          title: 'Objects',
           url: '/admin/archive/objects',
           icon: Package
         },
         {
-          title: 'Object Category',
-          url: '/admin/archive/categories',
+          title: 'Create Object',
+          url: '/admin/archive/objects/create',
           icon: PackageSearch
-        },
-        {
-          title: 'Object Tags',
-          url: '/admin/archive/tags',
-          icon: Tags
         }
       ]
     },
