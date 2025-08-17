@@ -20,6 +20,7 @@ export const useObjects = (params: ObjectListParams) => {
     queryKey: ['objects', params],
     queryFn: async (): Promise<IApiResponse<ArchiveObjectListItem[]>> => {
       const response = await service.get('/objects', params)
+
       return response.data
     },
     staleTime: 5 * 60 * 1000,
@@ -42,6 +43,7 @@ export const useObject = (id?: number) => {
     queryKey: ['object', id],
     queryFn: async (): Promise<IApiResponse<ArchiveObjectDetail>> => {
       const response = await service.get(`/objects/${id}`)
+
       return response.data
     },
     enabled: !!id,
@@ -64,11 +66,13 @@ export const useRelations = (id?: number) => {
     queryKey: ['object-relations', id],
     queryFn: async (): Promise<IApiResponse<ObjectRelationRow[]>> => {
       const response = await service.get(`/objects/${id}/relations`)
+
       return response.data
     },
     enabled: !!id,
     staleTime: 5 * 60 * 1000
   })
+
   return {
     relations: data?.data ?? [],
     relationsLoading: isLoading,

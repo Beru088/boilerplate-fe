@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { MoreHorizontal, Package, Search, Eye, Plus } from 'lucide-react'
+import { MoreHorizontal, Package, Search, Plus } from 'lucide-react'
 import Link from 'next/link'
 import ListPagination from '@/components/shared/pagination'
 import { ArchiveObjectListItem } from '@/types/object'
@@ -86,6 +86,7 @@ const ObjectsPage = () => {
                 <TableBody>
                   {objects.map((obj: ArchiveObjectListItem, idx: number) => {
                     const cover = obj.media?.find(m => m.isCover) || obj.media?.[0]
+
                     return (
                       <TableRow key={obj.id}>
                         <TableCell className='text-center'>{(params.skip || 0) + idx + 1}</TableCell>

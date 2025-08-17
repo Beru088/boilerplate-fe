@@ -84,6 +84,7 @@ const ListPagination = (props: ListPaginationProps) => {
             onClick={() => {
               if (hasTotalPages) {
                 if (isLastPage) return
+
                 return handleChange(currentPage + 1)
               }
               if (canRenderPrevNextFallback) {

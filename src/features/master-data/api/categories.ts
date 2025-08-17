@@ -10,10 +10,12 @@ export const useCategories = () => {
     queryKey: ['categories'],
     queryFn: async (): Promise<IApiResponse<CategoryRow[]>> => {
       const response = await service.get('/categories')
+
       return response.data
     },
     staleTime: 10 * 60 * 1000
   })
+
   return {
     categories: data?.data ?? [],
     categoriesLoading: isLoading,
@@ -28,9 +30,11 @@ type CreateCategoryInput = (Pick<CategoryRow, 'name'> & { description?: string; 
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (payload: CreateCategoryInput): Promise<IApiResponse<CategoryRow>> => {
       const response = await service.post('/categories', payload)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] })
@@ -41,6 +45,7 @@ type UpdateCategoryInput = Partial<CategoryRow> | FormData
 
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async ({
       id,
@@ -50,9 +55,10 @@ export const useUpdateCategory = () => {
       payload: UpdateCategoryInput
     }): Promise<IApiResponse<CategoryRow>> => {
       const response = await service.put(`/categories/${id}`, payload)
+
       return response.data
     },
-    onSuccess: (_d, v) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     }
   })
@@ -60,9 +66,11 @@ export const useUpdateCategory = () => {
 
 export const useDeleteCategory = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
-    mutationFn: async (id: number): Promise<IApiResponse<{}>> => {
+    mutationFn: async (id: number): Promise<IApiResponse> => {
       const response = await service.del(`/categories/${id}`)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['categories'] })

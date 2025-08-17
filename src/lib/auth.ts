@@ -1,106 +1,142 @@
-'use client';
+'use client'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { service } from '@/lib/api-client';
-import { useRouter } from 'next/navigation';
-import authConfig from '@/configs/auth';
-import { ILoginCredentials } from '@/types/api';
-import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { service } from '@/lib/api-client'
+import { useRouter } from 'next/navigation'
+import authConfig from '@/configs/auth'
+import { ILoginCredentials } from '@/types/api'
+import { useEffect, useState } from 'react'
 
 export const useAuth = () => {
-    const queryClient = useQueryClient();
-    const router = useRouter();
-    const [isClient, setIsClient] = useState(false);
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const [isClient, setIsClient] = useState(false)
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
-    const authApi = {
-        login: async (credentials: ILoginCredentials) => {
-            const response = await service.post('/auth/login', credentials);
+  const authApi = {
+    login: async (credentials: ILoginCredentials) => {
+      const response = await service.post('/auth/login', credentials)
 
-            return response.data;
-        },
+      return response.data
+    },
 
-        logout: async () => {
-            const response = await service.post('/auth/logout');
+    loginWithToken: async (token: string) => {
+      const response = await service.post('/auth/verify-token', { token })
 
-            return response.data;
-        },
+      return response.data
+    },
 
-        getCurrentUser: async () => {
-            const response = await service.get('/auth/me');
+    logout: async () => {
+      const response = await service.post('/auth/logout')
 
-            return response.data;
-        },
-    };
+      return response.data
+    },
 
-    const loginMutation = useMutation({
-        mutationFn: authApi.login,
-        onSuccess: (data) => {
-            const { user, token } = data;
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('user');
-                localStorage.removeItem(authConfig.storageTokenKeyName);
+    getCurrentUser: async () => {
+      const response = await service.get('/auth/me')
 
-                localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem(authConfig.storageTokenKeyName, token);
-            }
-            queryClient.removeQueries({ queryKey: ['user'] });
-            queryClient.setQueryData(['me'], { data: user });
+      return response.data
+    }
+  }
 
-            if (user.role.name === 'viewer') {
-                router.push('/explore');
-            } else {
-                router.push('/admin');
-            }
-        },
-        onError: (error) => {
-            console.error('Login failed:', error);
-        },
-    });
+  const loginMutation = useMutation({
+    mutationFn: authApi.login,
+    onSuccess: data => {
+      const { user, token } = data
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user')
+        localStorage.removeItem(authConfig.storageTokenKeyName)
 
-    const logoutMutation = useMutation({
-        mutationFn: authApi.logout,
-        onSuccess: () => {
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('user');
-                localStorage.removeItem(authConfig.storageTokenKeyName);
-            }
-            queryClient.clear();
-            router.push('/');
-        },
-        onError: (error) => {
-            console.error('Logout failed:', error);
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('user');
-                localStorage.removeItem(authConfig.storageTokenKeyName);
-            }
-            queryClient.clear();
-            router.push('/');
-        },
-    });
+        localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem(authConfig.storageTokenKeyName, token)
+      }
+      queryClient.removeQueries({ queryKey: ['user'] })
+      queryClient.setQueryData(['me'], { data: user })
 
-    const { data: userData, isLoading, error } = useQuery({
-        queryKey: ['me'],
-        queryFn: authApi.getCurrentUser,
-        retry: false,
-        staleTime: 1000 * 60 * 5,
-        enabled: isClient && typeof window !== 'undefined' && !!localStorage.getItem(authConfig.storageTokenKeyName),
-    });
+      if (user.role.name === 'viewer') {
+        router.push('/explore')
+      } else {
+        router.push('/admin')
+      }
+    },
+    onError: error => {
+      console.error('Login failed:', error)
+    }
+  })
 
-    const user = userData?.data;
-    const isAuthenticated = !!user;
+  const loginWithTokenMutation = useMutation({
+    mutationFn: authApi.loginWithToken,
+    onSuccess: data => {
+      const { user, token } = data
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user')
+        localStorage.removeItem(authConfig.storageTokenKeyName)
 
-    return {
-        user,
-        isAuthenticated,
-        isLoading,
-        error,
-        login: loginMutation.mutate,
-        logout: logoutMutation.mutate,
-        isLoginLoading: loginMutation.isPending,
-        isLogoutLoading: logoutMutation.isPending,
-    };
-};
+        localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem(authConfig.storageTokenKeyName, token)
+      }
+      queryClient.removeQueries({ queryKey: ['user'] })
+      queryClient.setQueryData(['me'], { data: user })
+
+      if (user.role.name === 'viewer') {
+        router.push('/explore')
+      } else {
+        router.push('/admin')
+      }
+    },
+    onError: error => {
+      console.error('Token login failed:', error)
+    }
+  })
+
+  const logoutMutation = useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user')
+        localStorage.removeItem(authConfig.storageTokenKeyName)
+      }
+      queryClient.clear()
+      router.push('/')
+    },
+    onError: error => {
+      console.error('Logout failed:', error)
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user')
+        localStorage.removeItem(authConfig.storageTokenKeyName)
+      }
+      queryClient.clear()
+      router.push('/')
+    }
+  })
+
+  const {
+    data: userData,
+    isLoading,
+    error
+  } = useQuery({
+    queryKey: ['me'],
+    queryFn: authApi.getCurrentUser,
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+    enabled: isClient && typeof window !== 'undefined' && !!localStorage.getItem(authConfig.storageTokenKeyName)
+  })
+
+  const user = userData?.data
+  const isAuthenticated = !!user
+
+  return {
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    login: loginMutation.mutate,
+    loginWithToken: loginWithTokenMutation.mutate,
+    logout: logoutMutation.mutate,
+    isLoginLoading: loginMutation.isPending,
+    isLogoutLoading: logoutMutation.isPending
+  }
+}

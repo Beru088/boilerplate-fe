@@ -25,6 +25,7 @@ const AdminMasterMaterialsPage = () => {
   const totalPages = useMemo(() => Math.max(1, Math.ceil((materials?.length || 0) / pageSize)), [materials])
   const paged = useMemo(() => {
     const start = (currentPage - 1) * pageSize
+
     return materials.slice(start, start + pageSize)
   }, [materials, currentPage])
 

@@ -96,6 +96,7 @@ export const UpdateObjectForm = ({ id, onSuccess }: { id: number; onSuccess?: ()
         const update: any = { id: m.id }
         if (changedPos) update.position = nextPos
         if (willBeCover) update.isCover = true
+
         return update
       })
       .filter(u => 'position' in u || 'isCover' in u)
@@ -234,6 +235,7 @@ export const UpdateObjectForm = ({ id, onSuccess }: { id: number; onSuccess?: ()
                 const isVideo = (m.mime || '').startsWith('video/') || /(mp4|webm|mov|mkv)$/i.test(m.url || '')
                 const filename = (m.url || '').split('/').pop() || ''
                 const markedDeleted = deleteMediaIds.includes(m.id)
+
                 return (
                   <div
                     key={`ex-${m.id}`}

@@ -10,10 +10,12 @@ export const useTags = () => {
     queryKey: ['tags'],
     queryFn: async (): Promise<IApiResponse<TagRow[]>> => {
       const response = await service.get('/tags')
+
       return response.data
     },
     staleTime: 10 * 60 * 1000
   })
+
   return {
     tags: data?.data ?? [],
     tagsLoading: isLoading,
@@ -26,9 +28,11 @@ export const useTags = () => {
 
 export const useCreateTag = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (payload: Pick<TagRow, 'name'>): Promise<IApiResponse<TagRow>> => {
       const response = await service.post('/tags', payload)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tags'] })
@@ -37,9 +41,11 @@ export const useCreateTag = () => {
 
 export const useUpdateTag = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async ({ id, payload }: { id: number; payload: Partial<TagRow> }): Promise<IApiResponse<TagRow>> => {
       const response = await service.put(`/tags/${id}`, payload)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tags'] })
@@ -48,9 +54,11 @@ export const useUpdateTag = () => {
 
 export const useDeleteTag = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (id: number): Promise<IApiResponse<{ success: boolean }>> => {
       const response = await service.del(`/tags/${id}`)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tags'] })

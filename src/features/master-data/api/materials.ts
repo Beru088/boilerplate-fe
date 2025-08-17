@@ -10,10 +10,12 @@ export const useMaterials = () => {
     queryKey: ['materials'],
     queryFn: async (): Promise<IApiResponse<MaterialRow[]>> => {
       const response = await service.get('/materials')
+
       return response.data
     },
     staleTime: 10 * 60 * 1000
   })
+
   return {
     materials: data?.data ?? [],
     materialsLoading: isLoading,
@@ -26,9 +28,11 @@ export const useMaterials = () => {
 
 export const useCreateMaterial = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (payload: Pick<MaterialRow, 'name'>): Promise<IApiResponse<MaterialRow>> => {
       const response = await service.post('/materials', payload)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['materials'] })
@@ -37,6 +41,7 @@ export const useCreateMaterial = () => {
 
 export const useUpdateMaterial = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async ({
       id,
@@ -46,6 +51,7 @@ export const useUpdateMaterial = () => {
       payload: Partial<MaterialRow>
     }): Promise<IApiResponse<MaterialRow>> => {
       const response = await service.put(`/materials/${id}`, payload)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['materials'] })
@@ -54,9 +60,11 @@ export const useUpdateMaterial = () => {
 
 export const useDeleteMaterial = () => {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: async (id: number): Promise<IApiResponse<{ success: boolean }>> => {
       const response = await service.del(`/materials/${id}`)
+
       return response.data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['materials'] })

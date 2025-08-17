@@ -10,6 +10,7 @@ export const useRoles = () => {
     queryKey: ['roles'],
     queryFn: async (): Promise<IApiResponse<IRole[]>> => {
       const response = await service.get('/roles')
+
       return response.data
     },
     staleTime: 10 * 60 * 1000,

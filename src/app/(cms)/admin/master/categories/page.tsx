@@ -27,6 +27,7 @@ const AdminMasterCategoriesPage = () => {
   const totalPages = useMemo(() => Math.max(1, Math.ceil((categories?.length || 0) / pageSize)), [categories])
   const paged = useMemo(() => {
     const start = (currentPage - 1) * pageSize
+
     return categories.slice(start, start + pageSize)
   }, [categories, currentPage])
 

@@ -25,6 +25,7 @@ const AdminMasterTagsPage = () => {
   const totalPages = useMemo(() => Math.max(1, Math.ceil((tags?.length || 0) / pageSize)), [tags])
   const paged = useMemo(() => {
     const start = (currentPage - 1) * pageSize
+
     return tags.slice(start, start + pageSize)
   }, [tags, currentPage])
 

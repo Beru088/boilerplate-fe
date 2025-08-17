@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { useAuth } from '@/lib/auth'
 import { ILoginCredentials } from '@/types/api'
+import { AppConfig } from '@/configs/api'
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const [formData, setFormData] = useState<ILoginCredentials>({
@@ -32,7 +33,7 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
   }
 
   const handleGoogleLogin = () => {
-    alert('Google SSO (to be implemented)')
+    window.location.href = `${AppConfig.serverUrl}/auth/google/login`
   }
 
   return (

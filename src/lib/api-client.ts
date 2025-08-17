@@ -27,7 +27,7 @@ axios.interceptors.response.use(
       localStorage.removeItem('user')
 
       if (typeof window !== 'undefined') {
-        window.location.href = '#'
+        window.location.href = '/'
       }
     }
 
@@ -42,16 +42,19 @@ export const service = {
 
   post: (path: string, data?: any): Promise<AxiosResponse> => {
     const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+
     return axios.post(path, data, { headers })
   },
 
   put: (path: string, data?: any): Promise<AxiosResponse> => {
     const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+
     return axios.put(path, data, { headers })
   },
 
   patch: (path: string, data?: any): Promise<AxiosResponse> => {
     const headers = data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+
     return axios.patch(path, data, { headers })
   },
 
