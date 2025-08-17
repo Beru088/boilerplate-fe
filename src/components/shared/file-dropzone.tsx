@@ -23,6 +23,7 @@ export const FileDropzone = ({ files, onChange, multiple = true, maxFiles, accep
         const key = `${f.name}-${f.size}-${(f as any).lastModified}`
         if (seen.has(key)) return false
         seen.add(key)
+
         return true
       })
       onChange(unique)
@@ -45,6 +46,7 @@ export const FileDropzone = ({ files, onChange, multiple = true, maxFiles, accep
       const isImage = mime.startsWith('image/')
       const isVideo = mime.startsWith('video/')
       const isDocument = !isImage && !isVideo
+
       return {
         key: `${f.name}-${f.size}-${(f as any).lastModified}`,
         file: f,

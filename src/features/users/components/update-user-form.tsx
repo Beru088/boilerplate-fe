@@ -76,7 +76,7 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
       setIsOpen(false)
       onSuccess?.()
     } catch (error) {
-      toast.error('Failed to update user')
+      toast.error('Failed to update user:' + (error as Error).message)
     }
   }
 

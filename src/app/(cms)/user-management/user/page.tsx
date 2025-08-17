@@ -28,7 +28,7 @@ const UsersPage = () => {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-  const { users, usersLoading, usersFetched, usersError, error, refetch, pagination } = useUsers(userOptions)
+  const { users, usersLoading, usersFetched, usersError, refetch, pagination } = useUsers(userOptions)
   const totalPages = pagination?.totalPages ?? 1
 
   const handleSuccess = () => {

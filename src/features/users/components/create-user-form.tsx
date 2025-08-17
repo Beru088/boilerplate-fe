@@ -58,7 +58,7 @@ const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
       setOpen(false)
       onSuccess?.()
     } catch (error) {
-      toast.error('Failed to create user')
+      toast.error('Failed to create user:' + (error as Error).message)
     }
   }
 

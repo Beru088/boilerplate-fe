@@ -5,12 +5,10 @@ import {
   FileBox,
   FileChartColumn,
   FileKey2,
-  LayoutDashboard,
   LibraryBig,
   Package,
   PackageSearch,
   Settings2,
-  Tags,
   UserCog,
   UserLock,
   Users

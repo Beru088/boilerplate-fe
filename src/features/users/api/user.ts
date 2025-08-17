@@ -10,6 +10,7 @@ export const useUsers = (params: IUserOption) => {
     queryKey: [`users/${params.role}`, params],
     queryFn: async (): Promise<IApiResponse<IUser[]>> => {
       const response = await service.get('/users', params)
+
       return response.data
     }
   })
@@ -30,6 +31,7 @@ export const useUser = (id: number) => {
     queryKey: ['user', id],
     queryFn: async (): Promise<IApiResponse<IUser>> => {
       const response = await service.get(`users/${id}`)
+
       return response.data
     },
     enabled: !!id

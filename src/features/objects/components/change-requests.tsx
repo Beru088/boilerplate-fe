@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { TextareaHTMLAttributes } from 'react'
 import {
   useCancelChangeRequest,
   useCreateChangeRequest,
