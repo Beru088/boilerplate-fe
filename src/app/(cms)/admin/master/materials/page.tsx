@@ -11,13 +11,13 @@ import { Button } from '@/components/ui/button'
 import { Filter, MoreHorizontal, Search } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useMemo, useState } from 'react'
-import type { MaterialRow } from '@/types/object'
+import type { IMaterial } from '@/types/materials'
 import ListPagination from '@/components/shared/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const AdminMasterMaterialsPage = () => {
   const { materials, materialsLoading } = useMaterials()
-  const [selected, setSelected] = useState<MaterialRow | null>(null)
+  const [selected, setSelected] = useState<IMaterial | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)

@@ -2,13 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { CategoryRow } from '@/types/object'
-import type { IApiResponse } from '@/types/api'
+import type { ICategory } from '@/types/categories'
+import type { IApiResponse } from '@/types'
 
 export const useCategories = () => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: ['categories'],
-    queryFn: async (): Promise<IApiResponse<CategoryRow[]>> => {
+    queryFn: async (): Promise<IApiResponse<ICategory[]>> => {
       const response = await service.get('/categories')
 
       return response.data
@@ -26,13 +26,13 @@ export const useCategories = () => {
   }
 }
 
-type CreateCategoryInput = (Pick<CategoryRow, 'name'> & { description?: string; thumbnail?: string }) | FormData
+type CreateCategoryInput = (Pick<ICategory, 'name'> & { description?: string; thumbnail?: string }) | FormData
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: CreateCategoryInput): Promise<IApiResponse<CategoryRow>> => {
+    mutationFn: async (payload: CreateCategoryInput): Promise<IApiResponse<ICategory>> => {
       const response = await service.post('/categories', payload)
 
       return response.data
@@ -41,7 +41,7 @@ export const useCreateCategory = () => {
   })
 }
 
-type UpdateCategoryInput = Partial<CategoryRow> | FormData
+type UpdateCategoryInput = Partial<ICategory> | FormData
 
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient()
@@ -53,7 +53,7 @@ export const useUpdateCategory = () => {
     }: {
       id: number
       payload: UpdateCategoryInput
-    }): Promise<IApiResponse<CategoryRow>> => {
+    }): Promise<IApiResponse<ICategory>> => {
       const response = await service.put(`/categories/${id}`, payload)
 
       return response.data

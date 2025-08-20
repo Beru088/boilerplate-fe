@@ -6,7 +6,7 @@ export const getMediaUrl = (path: string) => {
   return `${AppConfig.mediaUrl}/${path}`
 }
 
-export const formatIsoDate = (iso?: string) => {
+export const formatIsoDate = (iso?: string | Date) => {
   if (!iso) return ''
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return ''

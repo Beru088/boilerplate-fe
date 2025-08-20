@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import { useUpdateCategory } from '@/features/master-data/api/categories'
-import type { CategoryRow } from '@/types/object'
+import type { ICategory } from '@/types/categories'
 import { toast } from 'sonner'
 
 const schema = z.object({
@@ -34,7 +34,7 @@ export default function UpdateCategoryForm({
   onOpenChange,
   onSuccess
 }: {
-  category: CategoryRow
+  category: ICategory
   open: boolean
   onOpenChange: (o: boolean) => void
   onSuccess?: () => void

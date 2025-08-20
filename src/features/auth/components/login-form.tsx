@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import { useAuth } from '@/lib/auth'
-import { ILoginCredentials } from '@/types/api'
+import { ILoginCredentials } from '@/types'
 import { AppConfig } from '@/configs/api'
 
 const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {

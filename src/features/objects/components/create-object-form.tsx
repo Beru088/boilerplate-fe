@@ -12,12 +12,16 @@ import { Loader2, X } from 'lucide-react'
 import { useCreateObject } from '@/features/objects/api/object-mutation'
 import { useCategories } from '@/features/master-data/api/categories'
 import { useMaterials } from '@/features/master-data/api/materials'
-import type { IObjectCreate } from '@/types/object'
+import type { IObjectCreate } from '@/types/objects'
 import { FileDropzone } from '@/components/shared/file-dropzone'
+import { Textarea } from '@/components/ui/textarea'
+import { useRouter } from 'next/navigation'
 
 const schemaCreate = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters'),
+  titleEn: z.string().optional(),
   description: z.string().optional(),
+  descriptionEn: z.string().optional(),
   categoryId: z.number().min(1, 'Select category'),
   materialId: z.number().min(1, 'Select material'),
   coverIndex: z.number().int().min(0).optional()
@@ -25,7 +29,8 @@ const schemaCreate = z.object({
 
 type CreateData = z.infer<typeof schemaCreate>
 
-export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
+export const CreateObjectForm = () => {
+  const router = useRouter()
   const createMutation = useCreateObject()
   const { categories, categoriesLoading } = useCategories()
   const { materials, materialsLoading } = useMaterials()
@@ -65,7 +70,7 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     setFiles([])
     setSelectedTags([])
     setInputText('')
-    onSuccess?.()
+    router.push('/admin/archive/objects')
   }
 
   return (
@@ -77,7 +82,7 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             name='title'
             render={({ field }) => (
               <FormItem className='flex-1'>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>Title - Indonesia</FormLabel>
                 <FormControl>
                   <Input placeholder='Object title' {...field} />
                 </FormControl>
@@ -85,6 +90,21 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name='titleEn'
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel>Title - English</FormLabel>
+                <FormControl>
+                  <Input placeholder='Object title in English' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className='flex gap-6'>
           <FormField
             control={form.control}
             name='categoryId'
@@ -112,21 +132,6 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               </FormItem>
             )}
           />
-        </div>
-        <FormField
-          control={form.control}
-          name='description'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input placeholder='Object description' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className='flex gap-6'>
           <FormField
             control={form.control}
             name='materialId'
@@ -159,7 +164,7 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             name='coverIndex'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Cover Index</FormLabel>
+                <FormLabel>Thumbnail</FormLabel>
                 <FormControl>
                   <Input
                     type='number'
@@ -173,10 +178,6 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
               </FormItem>
             )}
           />
-        </div>
-        <div className='space-y-2'>
-          <div className='text-sm font-medium'>Media files</div>
-          <FileDropzone files={files} onChange={setFiles} multiple />
         </div>
         <div className='space-y-2'>
           <div className='text-sm font-medium'>Tags</div>
@@ -202,6 +203,36 @@ export const CreateObjectForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             ))}
           </div>
         </div>
+        <div className='space-y-2'>
+          <div className='text-sm font-medium'>Media files</div>
+          <FileDropzone files={files} onChange={setFiles} multiple />
+        </div>
+        <FormField
+          control={form.control}
+          name='description'
+          render={({ field }) => (
+            <FormItem className='flex-1'>
+              <FormLabel>Description - Indonesia</FormLabel>
+              <FormControl>
+                <Textarea placeholder='Object description' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='descriptionEn'
+          render={({ field }) => (
+            <FormItem className='flex-1'>
+              <FormLabel>Description - English</FormLabel>
+              <FormControl>
+                <Textarea placeholder='Object description in English' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className='flex justify-end'>
           <Button
             type='submit'

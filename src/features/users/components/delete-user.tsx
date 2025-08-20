@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useDeleteUser } from '@/features/users/api/user-mutation'
-import { IUser } from '@/types/user'
+import { IUser } from '@/types/users'
 
 interface DeleteUserProps {
   user: IUser

@@ -2,8 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import { IApiResponse } from '@/types/api'
-import { IRole } from '@/types/role'
+import { IApiResponse } from '@/types'
+import { IRole } from '@/types/roles'
 
 export const useRoles = () => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({

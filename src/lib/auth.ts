@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
 import { useRouter } from 'next/navigation'
 import authConfig from '@/configs/auth'
-import { ILoginCredentials } from '@/types/api'
+import { ILoginCredentials } from '@/types'
 import { useEffect, useState } from 'react'
 
 export const useAuth = () => {

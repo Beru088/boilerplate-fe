@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useDeleteTag } from '@/features/master-data/api/tags'
-import type { TagRow } from '@/types/object'
+import type { ITag } from '@/types/tags'
 
 export default function DeleteTag({
   tag,
@@ -21,7 +21,7 @@ export default function DeleteTag({
   open,
   onOpenChange
 }: {
-  tag: TagRow
+  tag: ITag
   onSuccess?: () => void
   open?: boolean
   onOpenChange?: (o: boolean) => void

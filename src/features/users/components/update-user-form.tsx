@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Edit, Loader2 } from 'lucide-react'
 import { useUpdateUser } from '@/features/users/api/user-mutation'
 import { useRoles } from '@/features/master-data/api/roles'
-import { IUser } from '@/types/user'
+import { IUser } from '@/types/users'
 import { toast } from 'sonner'
 
 const updateUserSchema = z.object({

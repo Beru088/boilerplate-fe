@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useDeleteMaterial } from '@/features/master-data/api/materials'
-import type { MaterialRow } from '@/types/object'
+import type { IMaterial } from '@/types/materials'
 
 export default function DeleteMaterial({
   material,
@@ -21,7 +21,7 @@ export default function DeleteMaterial({
   open,
   onOpenChange
 }: {
-  material: MaterialRow
+  material: IMaterial
   onSuccess?: () => void
   open?: boolean
   onOpenChange?: (o: boolean) => void

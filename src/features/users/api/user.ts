@@ -2,13 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import { IApiResponse } from '@/types/api'
-import { IUser, IUserOption } from '@/types/user'
+import { IApiResponse, IDataWithMetadata } from '@/types'
+import { IUser, IUserQuery } from '@/types/users'
 
-export const useUsers = (params: IUserOption) => {
+export const useUsers = (params: IUserQuery) => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: [`users/${params.role}`, params],
-    queryFn: async (): Promise<IApiResponse<IUser[]>> => {
+    queryFn: async (): Promise<IDataWithMetadata<IUser[]>> => {
       const response = await service.get('/users', params)
 
       return response.data
@@ -29,7 +29,7 @@ export const useUsers = (params: IUserOption) => {
 export const useUser = (id: number) => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: ['user', id],
-    queryFn: async (): Promise<IApiResponse<IUser>> => {
+    queryFn: async (): Promise<IDataWithMetadata<IUser>> => {
       const response = await service.get(`users/${id}`)
 
       return response.data

@@ -2,8 +2,8 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import { IApiResponse } from '@/types/api'
-import { IUser } from '@/types/user'
+import { IApiResponse } from '@/types'
+import { IUser } from '@/types/users'
 
 export interface ICreateUserData {
   email: string

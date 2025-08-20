@@ -2,13 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { MaterialRow } from '@/types/object'
-import type { IApiResponse } from '@/types/api'
+import type { IMaterial } from '@/types/materials'
+import type { IApiResponse } from '@/types'
 
 export const useMaterials = () => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: ['materials'],
-    queryFn: async (): Promise<IApiResponse<MaterialRow[]>> => {
+    queryFn: async (): Promise<IApiResponse<IMaterial[]>> => {
       const response = await service.get('/materials')
 
       return response.data
@@ -30,7 +30,7 @@ export const useCreateMaterial = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: Pick<MaterialRow, 'name'>): Promise<IApiResponse<MaterialRow>> => {
+    mutationFn: async (payload: Pick<IMaterial, 'name'>): Promise<IApiResponse<IMaterial>> => {
       const response = await service.post('/materials', payload)
 
       return response.data
@@ -48,8 +48,8 @@ export const useUpdateMaterial = () => {
       payload
     }: {
       id: number
-      payload: Partial<MaterialRow>
-    }): Promise<IApiResponse<MaterialRow>> => {
+      payload: Partial<IMaterial>
+    }): Promise<IApiResponse<IMaterial>> => {
       const response = await service.put(`/materials/${id}`, payload)
 
       return response.data
