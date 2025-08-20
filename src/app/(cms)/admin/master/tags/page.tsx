@@ -11,13 +11,13 @@ import { Button } from '@/components/ui/button'
 import { Filter, MoreHorizontal, Search } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useMemo, useState } from 'react'
-import type { TagRow } from '@/types/object'
+import type { ITag } from '@/types/tags'
 import ListPagination from '@/components/shared/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const AdminMasterTagsPage = () => {
   const { tags, tagsLoading } = useTags()
-  const [selected, setSelected] = useState<TagRow | null>(null)
+  const [selected, setSelected] = useState<ITag | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)

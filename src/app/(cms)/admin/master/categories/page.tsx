@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Filter, MoreHorizontal, Search } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useMemo, useState } from 'react'
-import type { CategoryRow } from '@/types/object'
+import type { ICategory } from '@/types/categories'
 import ListPagination from '@/components/shared/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ import { formatIsoDate } from '@/utils/helper'
 
 const AdminMasterCategoriesPage = () => {
   const { categories, categoriesLoading } = useCategories()
-  const [selected, setSelected] = useState<CategoryRow | null>(null)
+  const [selected, setSelected] = useState<ICategory | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)

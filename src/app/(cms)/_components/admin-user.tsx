@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import { useAuth } from '@/lib/auth'
-import { IUser } from '@/types/user'
+import { IUser } from '@/types/users'
 
 export function AdminUser({ user }: { user: IUser }) {
   const { isMobile } = useSidebar()

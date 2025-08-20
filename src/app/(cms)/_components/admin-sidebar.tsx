@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  ArchiveRestore,
   BookOpen,
   FileBox,
   FileChartColumn,
@@ -54,18 +55,23 @@ const data = {
       items: [
         {
           title: 'Activity Logs',
-          url: '/admin/logs/activity',
+          url: '/logs/activity',
           icon: FileChartColumn
         },
         {
-          title: 'Change Logs',
-          url: '/admin/logs/changes',
+          title: 'Object Change Logs',
+          url: '/logs/object',
           icon: FileBox
         }
       ]
     }
   ],
   navAdmin: [
+    {
+      title: 'Object Change Request',
+      url: '/change-request',
+      icon: ArchiveRestore
+    },
     {
       title: 'User Management',
       url: '#',

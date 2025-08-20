@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import { useUpdateMaterial } from '@/features/master-data/api/materials'
-import type { MaterialRow } from '@/types/object'
+import type { IMaterial } from '@/types/materials'
 import { toast } from 'sonner'
 
 const schema = z.object({ name: z.string().min(2, 'Name must be at least 2 characters') })
@@ -29,7 +29,7 @@ export default function UpdateMaterialForm({
   onOpenChange,
   onSuccess
 }: {
-  material: MaterialRow
+  material: IMaterial
   open: boolean
   onOpenChange: (o: boolean) => void
   onSuccess?: () => void

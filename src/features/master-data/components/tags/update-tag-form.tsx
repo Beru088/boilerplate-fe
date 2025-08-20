@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import { useUpdateTag } from '@/features/master-data/api/tags'
-import type { TagRow } from '@/types/object'
+import type { ITag } from '@/types/tags'
 import { toast } from 'sonner'
 
 const schema = z.object({ name: z.string().min(2, 'Name must be at least 2 characters') })
@@ -29,7 +29,7 @@ export default function UpdateTagForm({
   onOpenChange,
   onSuccess
 }: {
-  tag: TagRow
+  tag: ITag
   open: boolean
   onOpenChange: (o: boolean) => void
   onSuccess?: () => void

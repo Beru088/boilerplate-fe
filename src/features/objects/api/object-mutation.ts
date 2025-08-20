@@ -2,22 +2,16 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type {
-  ArchiveObjectDetail,
-  IChangeRequestInput,
-  IChangeReviewInput,
-  IObjectCreate,
-  IObjectUpdate,
-  IRelationCreate,
-  ObjectRelationRow
-} from '@/types/object'
-import type { IApiResponse } from '@/types/api'
+import type { IChangeReviewInput } from '@/types/change-requests'
+import type { IObjectCreate, IObjectUpdate, IObject } from '@/types/objects'
+import type { IObjectRelationCreate, IObjectRelation } from '@/types/object-relations'
+import type { IApiResponse } from '@/types'
 
 export const useCreateObject = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: IObjectCreate & { files?: File[] }): Promise<IApiResponse<ArchiveObjectDetail>> => {
+    mutationFn: async (payload: IObjectCreate & { files?: File[] }): Promise<IApiResponse<IObject>> => {
       const formData = new FormData()
       const { files, ...dataJson } = payload as any
 
@@ -48,7 +42,7 @@ export const useUpdateObject = () => {
     }: {
       id: number
       payload: IObjectUpdate & { files?: File[] }
-    }): Promise<IApiResponse<ArchiveObjectDetail>> => {
+    }): Promise<IApiResponse<IObject>> => {
       const formData = new FormData()
       const { files, ...dataJson } = payload as any
       formData.append('data', JSON.stringify(dataJson))
@@ -87,7 +81,7 @@ export const useRestoreObject = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: number): Promise<IApiResponse<ArchiveObjectDetail>> => {
+    mutationFn: async (id: number): Promise<IApiResponse<IObject>> => {
       const response = await service.post(`/objects/${id}/restore`)
 
       return response.data
@@ -125,8 +119,8 @@ export const useCreateRelation = () => {
       payload
     }: {
       id: number
-      payload: IRelationCreate
-    }): Promise<IApiResponse<ObjectRelationRow>> => {
+      payload: IObjectRelationCreate
+    }): Promise<IApiResponse<IObjectRelation>> => {
       const response = await service.post(`/objects/${id}/relations`, payload)
 
       return response.data
@@ -175,27 +169,6 @@ export const useRemoveTag = () => {
   return useMutation({
     mutationFn: async ({ id, tagId }: { id: number; tagId: number }): Promise<IApiResponse> => {
       const response = await service.del(`/objects/${id}/tags/${tagId}`)
-
-      return response.data
-    },
-    onSuccess: (_data, vars) => {
-      queryClient.invalidateQueries({ queryKey: ['object', vars.id] })
-    }
-  })
-}
-
-export const useCreateChangeRequest = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: async ({
-      id,
-      payload
-    }: {
-      id: number
-      payload: IChangeRequestInput
-    }): Promise<IApiResponse<ArchiveObjectDetail['relatedFrom'][number]>> => {
-      const response = await service.post(`/objects/${id}/change-request`, payload)
 
       return response.data
     },

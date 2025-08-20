@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useDeleteCategory } from '@/features/master-data/api/categories'
-import type { CategoryRow } from '@/types/object'
+import type { ICategory } from '@/types/categories'
 
 export default function DeleteCategory({
   category,
@@ -21,7 +21,7 @@ export default function DeleteCategory({
   open,
   onOpenChange
 }: {
-  category: CategoryRow
+  category: ICategory
   onSuccess?: () => void
   open?: boolean
   onOpenChange?: (o: boolean) => void

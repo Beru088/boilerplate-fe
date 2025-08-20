@@ -13,9 +13,10 @@ import { useObject } from '@/features/objects/api/object'
 import { useUpdateObject } from '@/features/objects/api/object-mutation'
 import { useCategories } from '@/features/master-data/api/categories'
 import { useMaterials } from '@/features/master-data/api/materials'
-import type { IObjectUpdate } from '@/types/object'
+import type { IObjectUpdate } from '@/types/objects'
 import { FileDropzone } from '@/components/shared/file-dropzone'
 import { getMediaUrl } from '@/utils/helper'
+import { useRouter } from 'next/navigation'
 
 const schemaUpdate = z.object({
   title: z.string().min(2, 'Title must be at least 2 characters'),
@@ -27,7 +28,8 @@ const schemaUpdate = z.object({
 
 type UpdateData = z.infer<typeof schemaUpdate>
 
-export const UpdateObjectForm = ({ id, onSuccess }: { id: number; onSuccess?: () => void }) => {
+export const UpdateObjectForm = (id: number) => {
+  const router = useRouter()
   const { object } = useObject(id)
   const updateMutation = useUpdateObject()
   const { categories, categoriesLoading } = useCategories()
@@ -117,7 +119,7 @@ export const UpdateObjectForm = ({ id, onSuccess }: { id: number; onSuccess?: ()
     setDeleteMediaIds([])
     setSelectedTags([])
     setInputText('')
-    onSuccess?.()
+    router.push('/admin/archive/objects')
   }
 
   return (

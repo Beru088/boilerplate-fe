@@ -2,8 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { ArchiveObjectDetail, ArchiveObjectListItem, ObjectRelationRow } from '@/types/object'
-import type { IApiResponse } from '@/types/api'
+import type { IObject } from '@/types/objects'
+import type { IObjectRelation } from '@/types/object-relations'
+import type { IApiResponse, IDataWithMetadata } from '@/types'
 
 export type ObjectListParams = {
   search?: string
@@ -18,7 +19,7 @@ export type ObjectListParams = {
 export const useObjects = (params: ObjectListParams) => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: ['objects', params],
-    queryFn: async (): Promise<IApiResponse<ArchiveObjectListItem[]>> => {
+    queryFn: async (): Promise<IDataWithMetadata<IObject[]>> => {
       const response = await service.get('/objects', params)
 
       return response.data
@@ -28,7 +29,7 @@ export const useObjects = (params: ObjectListParams) => {
   })
 
   return {
-    objects: (data?.data as ArchiveObjectListItem[]) || [],
+    objects: (data?.data as IObject[]) || [],
     pagination: data?.metadata?.pagination,
     objectsLoading: isLoading,
     objectsFetched: isFetched,
@@ -41,7 +42,7 @@ export const useObjects = (params: ObjectListParams) => {
 export const useObject = (id?: number) => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: ['object', id],
-    queryFn: async (): Promise<IApiResponse<ArchiveObjectDetail>> => {
+    queryFn: async (): Promise<IApiResponse<IObject>> => {
       const response = await service.get(`/objects/${id}`)
 
       return response.data
@@ -52,7 +53,7 @@ export const useObject = (id?: number) => {
   })
 
   return {
-    object: data?.data as ArchiveObjectDetail | undefined,
+    object: data?.data as IObject | undefined,
     objectLoading: isLoading,
     objectFetched: isFetched,
     objectError: isError,
@@ -64,7 +65,7 @@ export const useObject = (id?: number) => {
 export const useRelations = (id?: number) => {
   const { data, isLoading, isFetched } = useQuery({
     queryKey: ['object-relations', id],
-    queryFn: async (): Promise<IApiResponse<ObjectRelationRow[]>> => {
+    queryFn: async (): Promise<IApiResponse<IObjectRelation[]>> => {
       const response = await service.get(`/objects/${id}/relations`)
 
       return response.data
