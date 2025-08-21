@@ -11,8 +11,10 @@ import { IActivityLogQuery } from '@/types/logs'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import ListPagination from '@/components/shared/pagination'
+import { useRouter } from 'next/navigation'
 
 const ActivityLogsPage = () => {
+  const router = useRouter()
   const [logOptions, setLogOptions] = useState<IActivityLogQuery>({
     targetType: '',
     action: '',
@@ -143,7 +145,7 @@ const ActivityLogsPage = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align='end'>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push(`/logs/activity/${log.id}`)}>
                               <Eye className='mr-2 h-4 w-4' />
                               View Details
                             </DropdownMenuItem>

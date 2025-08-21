@@ -3,7 +3,6 @@
 import {
   ArchiveRestore,
   BookOpen,
-  FileBox,
   FileChartColumn,
   FileKey2,
   LibraryBig,
@@ -57,11 +56,6 @@ const data = {
           title: 'Activity Logs',
           url: '/logs/activity',
           icon: FileChartColumn
-        },
-        {
-          title: 'Object Change Logs',
-          url: '/logs/object',
-          icon: FileBox
         }
       ]
     }

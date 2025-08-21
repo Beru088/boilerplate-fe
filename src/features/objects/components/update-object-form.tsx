@@ -49,11 +49,11 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
   const [inputText, setInputText] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
-  const normalized = (name: string) => `#${name.trim().toUpperCase()}`
+  const normalized = (name: string) => name.trim().toUpperCase()
 
   const addOne = (raw: string) => {
     const tag = normalized(raw.replace(/^#/, ''))
-    if (tag === '#' || !tag.replace('#', '')) return
+    if (tag === '' || !tag) return
     setSelectedTags(prev => (prev.includes(tag) ? prev : [...prev, tag]))
     setInputText('')
   }
@@ -101,7 +101,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
       setCoverExistingId(object.media?.find(m => m.isCover)?.id)
       setDeleteMediaIds([])
 
-      const existingTags = object.objectTags?.map(ot => normalized(ot.tag.name)) || []
+      const existingTags = object.objectTags?.map(ot => ot.tag.name.toUpperCase()) || []
       setSelectedTags(existingTags)
       setInputText('')
     }
@@ -285,7 +285,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
           <div className='flex flex-wrap gap-2'>
             {selectedTags.map(tag => (
               <span key={tag} className='inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs'>
-                {tag.replace(/^#/, '')}
+                {tag}
                 <button
                   type='button'
                   onClick={() => setSelectedTags(prev => prev.filter(t => t !== tag))}

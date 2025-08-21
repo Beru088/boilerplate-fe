@@ -7,6 +7,7 @@ export interface IObjectChangeLog {
   id: number
   objectId: number
   userId: number
+  activityLogId: number
   action: ChangeAction
   changeSummary: string
   previousSnapshot: any
@@ -42,11 +43,6 @@ export interface ILogQuery extends IPaginationQuery {
   objectId?: number
   action?: string
   targetType?: string
-}
-
-export interface IObjectChangeLogQuery extends ILogQuery {
-  objectId?: number
-  action?: ChangeAction
 }
 
 export interface IActivityLogQuery extends ILogQuery {
