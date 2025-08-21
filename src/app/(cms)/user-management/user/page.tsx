@@ -16,7 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import ListPagination from '@/components/shared/pagination'
 
 const UsersPage = () => {
-  const [userOptions, setUserOptions] = useState<IUserOption>({
+  const [userOptions, setUserOptions] = useState<IUserQuery>({
     search: '',
     role: 'viewer',
     status: '',
@@ -162,8 +162,8 @@ const UsersPage = () => {
                   ))}
 
                   <ListPagination
-                    skip={userOptions.skip}
-                    take={userOptions.take}
+                    skip={userOptions.skip ?? 0}
+                    take={userOptions.take ?? 10}
                     totalPages={totalPages}
                     itemCount={users.length}
                     onChangeSkip={nextSkip => setUserOptions(prev => ({ ...prev, skip: nextSkip }))}

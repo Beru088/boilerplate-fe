@@ -19,6 +19,7 @@ export function DatePicker({ value, onChange, placeholder = 'Select date', class
   const dateValue = React.useMemo(() => {
     if (!value) return undefined
     if (typeof value === 'string') return new Date(value)
+
     return value
   }, [value])
 

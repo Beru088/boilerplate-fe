@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useCancelChangeRequest, useReviewChangeRequest } from '@/features/objects/api/object-mutation'
 
-export const ChangeRequests = ({ id }: { id: number }) => {
+export const ChangeRequests = () => {
   const review = useReviewChangeRequest()
   const cancel = useCancelChangeRequest()
   const [reviewReason, setReviewReason] = useState('')
