@@ -6,7 +6,7 @@ import { UpdateObjectForm } from '@/features/objects/components/update-object-fo
 
 const EditObjectPage = () => {
   const params = useParams()
-  const id = Number(params?.id)
+  const id = Number(params.id)
   if (!id) return null
 
   return (

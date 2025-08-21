@@ -54,7 +54,7 @@ export default function UpdateTagForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Update Tag</DialogTitle>
           <DialogDescription>Modify tag name.</DialogDescription>

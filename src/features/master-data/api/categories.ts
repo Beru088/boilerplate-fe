@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { ICategory } from '@/types/categories'
+import type { ICategory, ICategoryCreate, ICategoryUpdate } from '@/types/categories'
 import type { IApiResponse } from '@/types'
 
 export const useCategories = () => {
@@ -26,14 +26,21 @@ export const useCategories = () => {
   }
 }
 
-type CreateCategoryInput = (Pick<ICategory, 'name'> & { description?: string; thumbnail?: string }) | FormData
+type CreateCategoryInput = ICategoryCreate & { files?: File }
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (payload: CreateCategoryInput): Promise<IApiResponse<ICategory>> => {
-      const response = await service.post('/categories', payload)
+      const formData = new FormData()
+      const { files, ...dataJson } = payload as any
+
+      formData.append('data', JSON.stringify(dataJson))
+      if (files) {
+        formData.append('files', files)
+      }
+      const response = await service.post('/categories', formData)
 
       return response.data
     },
@@ -41,7 +48,7 @@ export const useCreateCategory = () => {
   })
 }
 
-type UpdateCategoryInput = Partial<ICategory> | FormData
+type UpdateCategoryInput = ICategoryUpdate & { files?: File }
 
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient()
@@ -54,7 +61,14 @@ export const useUpdateCategory = () => {
       id: number
       payload: UpdateCategoryInput
     }): Promise<IApiResponse<ICategory>> => {
-      const response = await service.put(`/categories/${id}`, payload)
+      const formData = new FormData()
+      const { files, ...dataJson } = payload as any
+
+      formData.append('data', JSON.stringify(dataJson))
+      if (files) {
+        formData.append('files', files)
+      }
+      const response = await service.put(`/categories/${id}`, formData)
 
       return response.data
     },

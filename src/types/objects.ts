@@ -6,10 +6,12 @@ import type { IObjectMedia, IObjectMediaInputItem, IObjectMediaUpdateItem } from
 
 export interface IObject {
   id: number
+  code: string
   title: string
   titleEn?: string
   description?: string
   descriptionEn?: string
+  dateTaken?: Date
   categoryId: number
   materialId: number
   category?: ICategory
@@ -32,20 +34,24 @@ export interface IObjectQuery extends IPaginationQuery {
 }
 
 export interface IObjectCreate {
+  code: string
   title: string
   titleEn?: string
   description?: string
   descriptionEn?: string
+  dateTaken?: Date
   categoryId: number
   materialId: number
   tags?: string[]
 }
 
 export interface IObjectUpdate {
+  code?: string
   title?: string
   titleEn?: string
   description?: string
   descriptionEn?: string
+  dateTaken?: Date
   categoryId?: number
   materialId?: number
   tags?: string[]

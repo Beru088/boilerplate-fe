@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { ITag } from '@/types/tags'
+import type { ITag, ITagCreate, ITagUpdate } from '@/types/tags'
 import type { IApiResponse } from '@/types'
 
 export const useTags = () => {
@@ -30,7 +30,7 @@ export const useCreateTag = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: Pick<ITag, 'name'>): Promise<IApiResponse<ITag>> => {
+    mutationFn: async (payload: ITagCreate): Promise<IApiResponse<ITag>> => {
       const response = await service.post('/tags', payload)
 
       return response.data
@@ -43,7 +43,7 @@ export const useUpdateTag = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, payload }: { id: number; payload: Partial<ITag> }): Promise<IApiResponse<ITag>> => {
+    mutationFn: async ({ id, payload }: { id: number; payload: ITagUpdate }): Promise<IApiResponse<ITag>> => {
       const response = await service.put(`/tags/${id}`, payload)
 
       return response.data

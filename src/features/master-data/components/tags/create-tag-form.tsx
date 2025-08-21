@@ -5,7 +5,15 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Plus, Loader2 } from 'lucide-react'
@@ -15,7 +23,7 @@ import { toast } from 'sonner'
 const schema = z.object({ name: z.string().min(2, 'Name must be at least 2 characters') })
 type FormData = z.infer<typeof schema>
 
-export default function CreateTagForm({ onSuccess }: { onSuccess?: () => void }) {
+export default function CreateTagForm() {
   const [open, setOpen] = useState(false)
   const mutation = useCreateTag()
   const form = useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { name: '' } })
@@ -26,7 +34,6 @@ export default function CreateTagForm({ onSuccess }: { onSuccess?: () => void })
       toast.success('Tag created')
       form.reset()
       setOpen(false)
-      onSuccess?.()
     } catch {
       toast.error('Failed to create tag')
     }
@@ -39,22 +46,26 @@ export default function CreateTagForm({ onSuccess }: { onSuccess?: () => void })
           <Plus className='mr-2 h-4 w-4' /> New Tag
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Tag</DialogTitle>
           <DialogDescription>Add a new tag to the system.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            <FormField name='name' control={form.control} render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder='Tag name' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              name='name'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Tag name' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DialogFooter>
               <Button type='submit' disabled={mutation.isPending}>
                 {mutation.isPending ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
@@ -67,4 +78,3 @@ export default function CreateTagForm({ onSuccess }: { onSuccess?: () => void })
     </Dialog>
   )
 }
-
