@@ -6,7 +6,6 @@ import type { IChangeRequestQuery, RequestStatus } from '@/types/change-requests
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Pagination } from '@/components/ui/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const statusColors = {
@@ -22,14 +21,7 @@ const ChangeRequestList = () => {
     take: 10
   })
 
-  const { changeRequests, pagination, changeRequestsLoading, changeRequestsError, refetch } = useChangeRequests(filters)
-
-  const handlePageChange = (page: number) => {
-    setFilters(prev => ({
-      ...prev,
-      skip: (page - 1) * (prev.take || 10)
-    }))
-  }
+  const { changeRequests, changeRequestsLoading, changeRequestsError, refetch } = useChangeRequests(filters)
 
   const handleStatusFilter = (status: RequestStatus | undefined) => {
     setFilters(prev => ({
@@ -113,13 +105,13 @@ const ChangeRequestList = () => {
                         <h3 className='font-semibold'>Change Request #{request.id}</h3>
                         <Badge className={statusColors[request.status]}>{request.status}</Badge>
                       </div>
-                      <p className='text-sm text-gray-600'>Object: {request.object.title}</p>
-                      <p className='text-sm text-gray-600'>Proposed by: {request.proposedBy.name}</p>
+                      <p className='text-sm text-gray-600'>Object: {request.object?.title}</p>
+                      <p className='text-sm text-gray-600'>Proposed by: {request.proposedBy?.name}</p>
                       <p className='text-sm text-gray-600'>
                         Submitted: {new Date(request.submittedAt).toLocaleDateString()}
                       </p>
                       {request.reviewedBy && (
-                        <p className='text-sm text-gray-600'>Reviewed by: {request.reviewedBy.name}</p>
+                        <p className='text-sm text-gray-600'>Reviewed by: {request.reviewedBy?.name}</p>
                       )}
                       {request.reasonRejected && (
                         <p className='text-sm text-red-600'>Reason: {request.reasonRejected}</p>
@@ -130,16 +122,6 @@ const ChangeRequestList = () => {
               </Card>
             ))
           )}
-        </div>
-      )}
-
-      {pagination.total > 0 && (
-        <div className='flex justify-center'>
-          <Pagination
-            currentPage={Math.floor(pagination.skip / pagination.take) + 1}
-            totalPages={Math.ceil(pagination.total / pagination.take)}
-            onPageChange={handlePageChange}
-          />
         </div>
       )}
     </div>

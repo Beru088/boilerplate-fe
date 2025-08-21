@@ -15,7 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ListPagination from '@/components/shared/pagination'
 
 export default function ContributorUsersPage() {
-  const [userOptions, setUserOptions] = useState<IUserOption>({
+  const [userOptions, setUserOptions] = useState<IUserQuery>({
     search: '',
     role: 'contributor',
     status: '',
@@ -148,8 +148,8 @@ export default function ContributorUsersPage() {
                   ))}
 
                   <ListPagination
-                    skip={userOptions.skip}
-                    take={userOptions.take}
+                    skip={userOptions.skip ?? 0}
+                    take={userOptions.take ?? 10}
                     totalPages={totalPages}
                     itemCount={users.length}
                     onChangeSkip={nextSkip => setUserOptions(prev => ({ ...prev, skip: nextSkip }))}
@@ -162,7 +162,6 @@ export default function ContributorUsersPage() {
         </Card>
       </div>
 
-      {/* Edit Dialog */}
       {selectedUser && showEditDialog && (
         <UpdateUserForm
           user={selectedUser}
@@ -172,7 +171,6 @@ export default function ContributorUsersPage() {
         />
       )}
 
-      {/* Delete Dialog */}
       {selectedUser && showDeleteDialog && (
         <DeleteUser
           user={selectedUser}

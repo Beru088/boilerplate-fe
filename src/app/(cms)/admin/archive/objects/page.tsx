@@ -84,7 +84,7 @@ const ObjectsPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {objects.map((obj: ArchiveObjectListItem, idx: number) => {
+                  {objects.map((obj: IObject, idx: number) => {
                     const cover = obj.media?.find(m => m.isCover) || obj.media?.[0]
 
                     return (
@@ -111,7 +111,7 @@ const ObjectsPage = () => {
                         <TableCell className='text-center'>{obj.material?.name}</TableCell>
                         <TableCell className='text-center'>
                           <div className='flex flex-wrap justify-center gap-1'>
-                            {obj.objectTags.map(t => (
+                            {obj.objectTags?.map(t => (
                               <Badge key={t.tag.id} variant='secondary'>
                                 {t.tag.name}
                               </Badge>

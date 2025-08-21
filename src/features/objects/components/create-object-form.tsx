@@ -15,13 +15,16 @@ import { useMaterials } from '@/features/master-data/api/materials'
 import type { IObjectCreate } from '@/types/objects'
 import { FileDropzone } from '@/components/shared/file-dropzone'
 import { Textarea } from '@/components/ui/textarea'
+import { DatePicker } from '@/components/shared/date-picker'
 import { useRouter } from 'next/navigation'
 
 const schemaCreate = z.object({
+  code: z.string().min(3, 'Code is required'),
   title: z.string().min(2, 'Title must be at least 2 characters'),
   titleEn: z.string().optional(),
   description: z.string().optional(),
   descriptionEn: z.string().optional(),
+  dateTaken: z.date().optional(),
   categoryId: z.number().min(1, 'Select category'),
   materialId: z.number().min(1, 'Select material'),
   coverIndex: z.number().int().min(0).optional()
@@ -57,7 +60,7 @@ export const CreateObjectForm = () => {
 
   const form = useForm<CreateData>({
     resolver: zodResolver(schemaCreate),
-    defaultValues: { title: '', description: '', categoryId: 0, materialId: 0, coverIndex: undefined }
+    defaultValues: { code: '', title: '', description: '', categoryId: 0, materialId: 0, coverIndex: undefined }
   })
 
   const onSubmit = async (values: CreateData) => {
@@ -105,6 +108,32 @@ export const CreateObjectForm = () => {
           />
         </div>
         <div className='flex gap-6'>
+          <FormField
+            control={form.control}
+            name='code'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Code</FormLabel>
+                <FormControl>
+                  <Input placeholder='Object code' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='dateTaken'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date Taken</FormLabel>
+                <FormControl>
+                  <DatePicker value={field.value} onChange={field.onChange} placeholder='Select date taken' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name='categoryId'
@@ -159,6 +188,7 @@ export const CreateObjectForm = () => {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name='coverIndex'

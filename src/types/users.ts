@@ -10,7 +10,7 @@ export interface IUser {
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date | null
-  role?: IRole
+  role: IRole
 }
 
 export interface IUserQuery extends IPaginationQuery {

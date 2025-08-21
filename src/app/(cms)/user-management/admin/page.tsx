@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { UserLock, Search, Filter, MoreHorizontal, Edit, Trash2 } from 'lucide-react'
 import { useUsers } from '@/features/users/api/user'
 import { Skeleton } from '@/components/ui/skeleton'
-import { IUserQuery, IUser } from '@/types/users'
+import { IUser, IUserQuery } from '@/types/users'
 import CreateUserForm from '@/features/users/components/create-user-form'
 import UpdateUserForm from '@/features/users/components/update-user-form'
 import DeleteUser from '@/features/users/components/delete-user'
@@ -15,7 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ListPagination from '@/components/shared/pagination'
 
 export default function AdminUsersPage() {
-  const [userOptions, setUserOptions] = useState<IUserOption>({
+  const [userOptions, setUserOptions] = useState<IUserQuery>({
     search: '',
     role: 'admin',
     status: '',
@@ -145,8 +145,8 @@ export default function AdminUsersPage() {
                   ))}
 
                   <ListPagination
-                    skip={userOptions.skip}
-                    take={userOptions.take}
+                    skip={userOptions.skip ?? 0}
+                    take={userOptions.take ?? 10}
                     totalPages={totalPages}
                     itemCount={users.length}
                     onChangeSkip={nextSkip => setUserOptions(prev => ({ ...prev, skip: nextSkip }))}

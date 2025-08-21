@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import { IApiResponse, IDataWithMetadata } from '@/types'
+import { IDataWithMetadata } from '@/types'
 import { IUser, IUserQuery } from '@/types/users'
 
 export const useUsers = (params: IUserQuery) => {

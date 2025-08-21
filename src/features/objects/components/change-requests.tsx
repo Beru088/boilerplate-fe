@@ -2,38 +2,15 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  useCancelChangeRequest,
-  useCreateChangeRequest,
-  useReviewChangeRequest
-} from '@/features/objects/api/object-mutation'
+import { useCancelChangeRequest, useReviewChangeRequest } from '@/features/objects/api/object-mutation'
 
-export const ChangeRequests = ({ id }: { id: number }) => {
-  const create = useCreateChangeRequest()
+export const ChangeRequests = () => {
   const review = useReviewChangeRequest()
   const cancel = useCancelChangeRequest()
-  const [snapshot, setSnapshot] = useState('')
   const [reviewReason, setReviewReason] = useState('')
 
   return (
     <div className='space-y-3'>
-      <div className='space-y-2'>
-        <div className='text-sm font-medium'>Submit change request (JSON)</div>
-        <textarea
-          className='min-h-24 w-full rounded border p-2 text-sm'
-          value={snapshot}
-          onChange={e => setSnapshot(e.target.value)}
-          placeholder='{"title":"New title"}'
-        />
-        <div className='flex gap-2'>
-          <Button
-            size='sm'
-            onClick={() => create.mutate({ id, payload: { requestSnapshot: snapshot ? JSON.parse(snapshot) : {} } })}
-          >
-            Submit
-          </Button>
-        </div>
-      </div>
       <div className='space-y-2'>
         <div className='text-sm font-medium'>Review a request</div>
         <input className='w-full rounded border p-2 text-sm' placeholder='Change Request ID' id='cr-id' />
