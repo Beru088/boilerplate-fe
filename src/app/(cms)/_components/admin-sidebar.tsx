@@ -112,6 +112,11 @@ const data = {
           title: 'Location',
           url: '/admin/master/locations',
           icon: FileKey2
+        },
+        {
+          title: 'Sub Location',
+          url: '/admin/master/sub-locations',
+          icon: FileKey2
         }
       ]
     }

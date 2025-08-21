@@ -14,6 +14,7 @@ import { useObject } from '@/features/objects/api/object'
 import { useUpdateObject } from '@/features/objects/api/object-mutation'
 import { useCategories } from '@/features/master-data/api/categories'
 import { useMaterials } from '@/features/master-data/api/materials'
+import { useLocations, useSubLocations } from '@/features/master-data/api/location'
 import type { IObjectUpdate } from '@/types/objects'
 import { FileDropzone } from '@/components/shared/file-dropzone'
 import { DatePicker } from '@/components/shared/date-picker'
@@ -29,6 +30,9 @@ const schemaUpdate = z.object({
   dateTaken: z.date().optional(),
   categoryId: z.number().min(1, 'Select category'),
   materialId: z.number().min(1, 'Select material'),
+  locationId: z.number().optional(),
+  subLocationId: z.number().optional(),
+  locationDetails: z.string().optional(),
   coverIndex: z.number().int().min(0).optional()
 })
 
@@ -40,6 +44,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
   const updateMutation = useUpdateObject()
   const { categories, categoriesLoading } = useCategories()
   const { materials, materialsLoading } = useMaterials()
+  const { locations, locationsLoading } = useLocations()
 
   const [files, setFiles] = useState<File[]>([])
   const [coverIndexNew, setCoverIndexNew] = useState<number | undefined>(undefined)
@@ -76,12 +81,28 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
       descriptionEn: '',
       categoryId: 0,
       materialId: 0,
-      coverIndex: undefined
+      locationId: 0,
+      subLocationId: 0,
+      locationDetails: '',
+      coverIndex: 0
     }
   })
 
+  const { subLocations: allSubLocations, subLocationsLoading } = useSubLocations()
+  const { subLocations, subLocationsLoading: filteredSubLocationsLoading } = useSubLocations(form.watch('locationId'))
+
+  const currentLocationId = form.watch('locationId')
+  const displaySubLocations = currentLocationId && currentLocationId > 0 ? subLocations : allSubLocations
+  const displaySubLocationsLoading =
+    currentLocationId && currentLocationId > 0 ? filteredSubLocationsLoading : subLocationsLoading
+
   useEffect(() => {
     if (object) {
+      const locationData = object.objectLocations?.[0]
+      const locationId = locationData?.location?.id
+      const subLocationId = locationData?.subLocation?.id
+      const locationDetails = locationData?.details
+
       form.reset({
         code: object.code,
         title: object.title,
@@ -90,7 +111,10 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
         descriptionEn: object.descriptionEn ?? '',
         dateTaken: object.dateTaken ? new Date(object.dateTaken) : undefined,
         categoryId: object.category?.id || 0,
-        materialId: object.material?.id || 0
+        materialId: object.material?.id || 0,
+        locationId: locationId,
+        subLocationId: subLocationId,
+        locationDetails: locationDetails || ''
       } as any)
 
       const nextPositions: Record<number, number> = {}
@@ -267,6 +291,93 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
                     value={(field.value as any) ?? ''}
                     onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value))}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className='flex gap-6'>
+          <FormField
+            control={form.control}
+            name='locationId'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <Select
+                  onValueChange={v => {
+                    const locationId = parseInt(v)
+                    field.onChange(locationId)
+                    form.setValue('subLocationId', undefined)
+                  }}
+                  value={field.value ? String(field.value) : undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={locationsLoading ? 'Loading...' : 'Select location'} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {locations.map(l => (
+                      <SelectItem key={l.id} value={String(l.id)}>
+                        {l.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='subLocationId'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Sub Location</FormLabel>
+                <Select
+                  onValueChange={v => {
+                    const subLocationId = parseInt(v)
+                    field.onChange(subLocationId)
+
+                    if (!form.watch('locationId') || form.watch('locationId') === 0) {
+                      const selectedSubLocation = allSubLocations.find(sl => sl.id === subLocationId)
+                      if (selectedSubLocation?.locationId) {
+                        form.setValue('locationId', selectedSubLocation.locationId)
+                      }
+                    }
+                  }}
+                  value={field.value ? String(field.value) : undefined}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder={displaySubLocationsLoading ? 'Loading...' : 'Select sub location'} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {displaySubLocations.length > 0 ? (
+                      displaySubLocations.map(sl => (
+                        <SelectItem key={sl.id} value={String(sl.id)}>
+                          {sl.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className='text-muted-foreground px-2 py-1.5 text-sm'>No sub-locations available</div>
+                    )}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='locationDetails'
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormLabel>Location Details</FormLabel>
+                <FormControl>
+                  <Input placeholder='Additional location details' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
