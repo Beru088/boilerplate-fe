@@ -3,6 +3,7 @@ import type { ICategory } from './categories'
 import type { IMaterial } from './materials'
 import type { ITag } from './tags'
 import type { IObjectMedia, IObjectMediaInputItem, IObjectMediaUpdateItem } from './object-media'
+import type { IObjectLocation } from './location'
 
 export interface IObject {
   id: number
@@ -18,6 +19,7 @@ export interface IObject {
   material?: IMaterial
   media?: IObjectMedia[]
   objectTags?: Array<{ tag: ITag }>
+  objectLocations?: IObjectLocation[]
   relatedFrom?: Array<{ to: IObject }>
   relatedTo?: Array<{ from: IObject }>
   createdAt: Date
@@ -43,6 +45,9 @@ export interface IObjectCreate {
   categoryId: number
   materialId: number
   tags?: string[]
+  locationId?: number
+  subLocationId?: number
+  locationDetails?: string
 }
 
 export interface IObjectUpdate {
@@ -55,11 +60,15 @@ export interface IObjectUpdate {
   categoryId?: number
   materialId?: number
   tags?: string[]
+  locationId?: number
+  subLocationId?: number
+  locationDetails?: string
 }
 
 export interface IObjectCreateWithMedia extends IObjectCreate {
   media?: IObjectMediaInputItem[]
   coverIndex?: number
+  files?: File[]
 }
 
 export interface IObjectUpdateWithMedia extends IObjectUpdate {
@@ -69,6 +78,7 @@ export interface IObjectUpdateWithMedia extends IObjectUpdate {
   mediaUpdates?: IObjectMediaUpdateItem[]
   deleteMediaIds?: number[]
   coverIndexNew?: number
+  files?: File[]
 }
 
 // Re-export media types for convenience

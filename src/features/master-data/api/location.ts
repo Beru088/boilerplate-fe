@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { ICountry, IProvince, ICity } from '@/types/location'
+import type { ICountry, IProvince, ICity, ILocation, ISubLocation } from '@/types/location'
 import type { IApiResponse } from '@/types'
 
 export const useCountries = () => {
@@ -67,6 +67,50 @@ export const useCities = (provinceId?: number) => {
     citiesLoading: isLoading,
     citiesFetched: isFetched,
     citiesError: isError,
+    error,
+    refetch
+  }
+}
+
+export const useLocations = () => {
+  const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
+    queryKey: ['locations'],
+    queryFn: async (): Promise<IApiResponse<ILocation[]>> => {
+      const response = await service.get('/locations')
+
+      return response.data
+    },
+    staleTime: 10 * 60 * 1000
+  })
+
+  return {
+    locations: data?.data ?? [],
+    locationsLoading: isLoading,
+    locationsFetched: isFetched,
+    locationsError: isError,
+    error,
+    refetch
+  }
+}
+
+export const useSubLocations = (locationId?: number) => {
+  const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
+    queryKey: ['sub-locations', locationId],
+    queryFn: async (): Promise<IApiResponse<ISubLocation[]>> => {
+      const params = locationId ? `?locationId=${locationId}` : ''
+      const response = await service.get(`/sub-locations${params}`)
+
+      return response.data
+    },
+    enabled: !locationId || locationId > 0,
+    staleTime: 10 * 60 * 1000
+  })
+
+  return {
+    subLocations: data?.data ?? [],
+    subLocationsLoading: isLoading,
+    subLocationsFetched: isFetched,
+    subLocationsError: isError,
     error,
     refetch
   }

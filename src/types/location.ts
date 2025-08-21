@@ -35,10 +35,16 @@ export interface ILocation {
   id: number
   name: string
   description?: string
+  countryId: number
+  provinceId: number
+  cityId: number
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date | null
   subLocations?: ISubLocation[]
+  country?: ICountry
+  province?: IProvince
+  city?: ICity
 }
 
 export interface ISubLocation {
@@ -99,4 +105,32 @@ export interface ISubLocationQuery extends IPaginationQuery {
   search?: string
   locationId?: number
   status?: 'active' | 'inactive' | ''
+}
+
+export interface ILocationCreate {
+  name: string
+  description?: string
+  countryId: number
+  provinceId: number
+  cityId: number
+}
+
+export interface ILocationUpdate {
+  name?: string
+  description?: string
+  countryId?: number
+  provinceId?: number
+  cityId?: number
+}
+
+export interface ISubLocationCreate {
+  locationId: number
+  name: string
+  description?: string
+}
+
+export interface ISubLocationUpdate {
+  locationId?: number
+  name?: string
+  description?: string
 }
