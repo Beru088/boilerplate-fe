@@ -43,7 +43,6 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
   const updateUserMutation = useUpdateUser()
   const { roles, rolesLoading } = useRoles()
 
-  // Use external control if provided, otherwise use internal state
   const isControlled = open !== undefined && onOpenChange !== undefined
   const isOpen = isControlled ? open : internalOpen
   const setIsOpen = isControlled ? onOpenChange : setInternalOpen
