@@ -26,7 +26,7 @@ const createUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   roleId: z.number().min(1, 'Please select a role'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().optional()
 })
 
 type CreateUserFormData = z.infer<typeof createUserSchema>

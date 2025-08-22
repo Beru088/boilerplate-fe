@@ -33,7 +33,7 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
   }
 
   const handleGoogleLogin = () => {
-    window.location.href = `${AppConfig.serverUrl}/auth/google/login`
+    window.location.href = `${AppConfig.baseUrl}/auth/google/login`
   }
 
   return (
