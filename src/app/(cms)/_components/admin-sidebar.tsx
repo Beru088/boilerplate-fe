@@ -27,6 +27,7 @@ import { AdminUser } from './admin-user'
 import { useAuth } from '@/lib/auth'
 import Image from 'next/image'
 import { Skeleton } from '@/components/ui/skeleton'
+import { isAdmin } from '@/utils/helper'
 
 const data = {
   navMain: [
@@ -144,7 +145,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       </SidebarHeader>
       <SidebarContent>
         <AdminMain items={data.navMain} />
-        <AdminMain title='Admin Platform' items={data.navAdmin} />
+        {isAdmin(user) && <AdminMain title='Admin Platform' items={data.navAdmin} />}
       </SidebarContent>
       <SidebarFooter>
         {!user || isLoading ? <Skeleton className='h-12 w-full bg-gray-200' /> : <AdminUser user={user} />}

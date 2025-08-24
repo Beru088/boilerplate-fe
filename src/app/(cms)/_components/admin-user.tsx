@@ -1,6 +1,6 @@
 'use client'
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles, Moon, Sun } from 'lucide-react'
+import { ChevronsUpDown, LogOut, Moon, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 
@@ -82,25 +82,6 @@ export function AdminUser({ user }: { user: IUser }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={toggleTheme} disabled={!mounted}>
                 {isDark ? <Sun className='h-4 w-4' /> : <Moon className='h-4 w-4' />}
                 {isDark ? 'Light Mode' : 'Dark Mode'}
