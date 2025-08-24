@@ -39,6 +39,29 @@ export const useObjects = (params: ObjectListParams) => {
   }
 }
 
+export const useDeletedObjects = (params: Omit<ObjectListParams, 'status'>) => {
+  const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
+    queryKey: ['deleted-objects', params],
+    queryFn: async (): Promise<IDataWithMetadata<IObject[]>> => {
+      const response = await service.get('/objects', { ...params, status: 'inactive' })
+
+      return response.data
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000
+  })
+
+  return {
+    deletedObjects: (data?.data as IObject[]) || [],
+    pagination: data?.metadata?.pagination,
+    deletedObjectsLoading: isLoading,
+    deletedObjectsFetched: isFetched,
+    deletedObjectsError: isError,
+    error,
+    refetch
+  }
+}
+
 export const useObject = (id?: number) => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
     queryKey: ['object', id],

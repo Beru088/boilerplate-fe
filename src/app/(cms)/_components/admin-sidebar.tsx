@@ -7,7 +7,7 @@ import {
   FileKey2,
   LibraryBig,
   Package,
-  PackageSearch,
+  PackagePlus,
   Settings2,
   UserCog,
   UserLock,
@@ -32,6 +32,11 @@ import { isAdmin } from '@/utils/helper'
 const data = {
   navMain: [
     {
+      title: 'Create Object',
+      url: '/admin/archive/objects/create',
+      icon: PackagePlus
+    },
+    {
       title: 'Archive Management',
       url: '#',
       icon: LibraryBig,
@@ -42,9 +47,9 @@ const data = {
           icon: Package
         },
         {
-          title: 'Create Object',
-          url: '/admin/archive/objects/create',
-          icon: PackageSearch
+          title: 'Deleted Objects',
+          url: '/admin/archive/objects/deleted',
+          icon: ArchiveRestore
         }
       ]
     },
