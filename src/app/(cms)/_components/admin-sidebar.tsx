@@ -6,8 +6,8 @@ import {
   FileChartColumn,
   FileKey2,
   LibraryBig,
-  Package,
   PackagePlus,
+  PackageSearch,
   Settings2,
   UserCog,
   UserLock,
@@ -33,7 +33,7 @@ const data = {
   navMain: [
     {
       title: 'Create Object',
-      url: '/admin/archive/objects/create',
+      url: '/object-archive/create',
       icon: PackagePlus
     },
     {
@@ -43,12 +43,12 @@ const data = {
       items: [
         {
           title: 'Objects',
-          url: '/admin/archive/objects',
-          icon: Package
+          url: '/object-archive',
+          icon: PackageSearch
         },
         {
           title: 'Deleted Objects',
-          url: '/admin/archive/objects/deleted',
+          url: '/object-archive/deleted',
           icon: ArchiveRestore
         }
       ]
@@ -101,27 +101,27 @@ const data = {
       items: [
         {
           title: 'Category',
-          url: '/admin/master/categories',
+          url: '/master/categories',
           icon: FileKey2
         },
         {
           title: 'Material',
-          url: '/admin/master/materials',
+          url: '/master/materials',
           icon: FileKey2
         },
         {
           title: 'Tags',
-          url: '/admin/master/tags',
+          url: '/master/tags',
           icon: FileKey2
         },
         {
           title: 'Location',
-          url: '/admin/master/locations',
+          url: '/master/locations',
           icon: FileKey2
         },
         {
           title: 'Sub Location',
-          url: '/admin/master/sub-locations',
+          url: '/master/sub-locations',
           icon: FileKey2
         }
       ]

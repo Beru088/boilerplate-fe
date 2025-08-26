@@ -13,13 +13,15 @@ interface RoleGuardProps {
   allowedRoles?: string[]
   redirectTo?: string
   fallback?: ReactNode
+  fullScreen?: boolean
 }
 
 const RoleGuard = ({
   children,
   allowedRoles = ['superadmin', 'admin', 'contributor'],
   redirectTo = '/explore',
-  fallback
+  fallback,
+  fullScreen = true
 }: RoleGuardProps) => {
   const { user, isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
@@ -36,9 +38,11 @@ const RoleGuard = ({
     router.push('/')
   }
 
+  const containerClass = fullScreen ? 'min-h-screen' : 'h-full w-full'
+
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center'>
+      <div className={`flex ${containerClass} items-center justify-center`}>
         <div className='space-y-4'>
           <Skeleton className='h-8 w-64' />
           <Skeleton className='h-4 w-48' />
@@ -49,7 +53,7 @@ const RoleGuard = ({
 
   if (!isAuthenticated) {
     return (
-      <div className='flex min-h-screen items-center justify-center p-4'>
+      <div className={`flex ${containerClass} items-center justify-center p-4`}>
         <Card className='w-full max-w-md'>
           <CardHeader className='text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/20'>
@@ -74,7 +78,7 @@ const RoleGuard = ({
   if (user?.role?.name && !hasAccess(user.role.name, allowedRoles)) {
     return (
       fallback || (
-        <div className='flex min-h-screen items-center justify-center p-4'>
+        <div className={`flex ${containerClass} items-center justify-center p-4`}>
           <Card className='w-full max-w-md'>
             <CardHeader className='text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20'>
