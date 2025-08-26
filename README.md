@@ -14,12 +14,14 @@ A modern web application for managing and exploring Samudera Asset Archive, buil
 ## 📦 Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd historia-fe
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    # or
@@ -30,6 +32,7 @@ A modern web application for managing and exploring Samudera Asset Archive, buil
 
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
+
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:8000/api
    NEXT_PUBLIC_BASE_URL=http://localhost:8000
@@ -37,6 +40,7 @@ A modern web application for managing and exploring Samudera Asset Archive, buil
    ```
 
 4. **Run the development server**
+
    ```bash
    npm run dev
    # or
@@ -62,7 +66,7 @@ A modern web application for managing and exploring Samudera Asset Archive, buil
 The application uses a role-based authentication system:
 
 - **User Role**: Redirects to `/explore` after login
-- **Admin Role**: Redirects to `/admin` after login
+- **Admin Role**: Redirects to `/dashboard` after login
 - **JWT Tokens**: Stored securely in localStorage
 - **Automatic Logout**: Handles token expiration and logout
 
@@ -77,6 +81,7 @@ The application uses a role-based authentication system:
 ## 🎨 UI Components
 
 Built with a custom component library using:
+
 - **Shadcn UI**: Accessible primitives
 - **Tailwind CSS**: Utility-first styling
 - **Custom Components**: Button, Card, Input, Sidebar, etc.

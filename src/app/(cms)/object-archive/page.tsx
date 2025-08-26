@@ -42,12 +42,12 @@ const ObjectsPage = () => {
         </div>
         <div className='flex items-center gap-2'>
           <Button variant='outline' asChild>
-            <Link href='/admin/archive/objects/deleted'>
+            <Link href='/object-archive/deleted'>
               <Archive className='mr-2 h-4 w-4' /> Deleted Objects
             </Link>
           </Button>
           <Button asChild>
-            <Link href='/admin/archive/objects/create'>
+            <Link href='/object-archive/create'>
               <Plus className='mr-2 h-4 w-4' /> New Object
             </Link>
           </Button>
@@ -136,12 +136,12 @@ const ObjectsPage = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                               <DropdownMenuItem asChild>
-                                <Link href={`/admin/archive/objects/${obj.id}`} className='flex items-center'>
+                                <Link href={`/object-archive/${obj.id}`} className='flex items-center'>
                                   View
                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem asChild>
-                                <Link href={`/admin/archive/objects/${obj.id}/edit`}>Edit</Link>
+                                <Link href={`/object-archive/${obj.id}/edit`}>Edit</Link>
                               </DropdownMenuItem>
                               {obj.deletedAt ? (
                                 <DropdownMenuItem onClick={() => restore.mutate(obj.id)}>Restore</DropdownMenuItem>

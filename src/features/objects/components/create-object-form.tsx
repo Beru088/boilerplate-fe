@@ -96,7 +96,7 @@ export const CreateObjectForm = () => {
     setFiles([])
     setSelectedTags([])
     setInputText('')
-    router.push('/admin/archive/objects')
+    router.push('/object-archive')
   }
 
   return (

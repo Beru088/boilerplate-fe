@@ -162,7 +162,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
     setDeleteMediaIds([])
     setSelectedTags([])
     setInputText('')
-    router.push('/admin/archive/objects')
+    router.push('/object-archive')
   }
 
   return (

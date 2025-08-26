@@ -39,7 +39,7 @@ const DeletedObjectsPage = () => {
           <p className='text-muted-foreground'>Manage and restore archived objects from the system.</p>
         </div>
         <Button variant='outline' asChild>
-          <Link href='/admin/archive/objects'>
+          <Link href='/object-archive'>
             <Package className='mr-2 h-4 w-4' /> Back to Objects
           </Link>
         </Button>
@@ -131,7 +131,7 @@ const DeletedObjectsPage = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                               <DropdownMenuItem asChild>
-                                <Link href={`/admin/archive/objects/${obj.id}`} className='flex items-center'>
+                                <Link href={`/object-archive/${obj.id}`} className='flex items-center'>
                                   View
                                 </Link>
                               </DropdownMenuItem>

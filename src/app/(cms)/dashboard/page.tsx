@@ -19,14 +19,14 @@ const AdminDashboard = () => {
       title: 'Manage Objects',
       description: 'View and manage archive objects',
       icon: Package,
-      href: '/admin/archive/objects',
+      href: '/object-archive',
       color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
       title: 'Create Object',
       description: 'Add new archive object',
       icon: Archive,
-      href: '/admin/archive/objects/create',
+      href: '/object-archive/create',
       color: 'bg-green-500 hover:bg-green-600'
     },
     {

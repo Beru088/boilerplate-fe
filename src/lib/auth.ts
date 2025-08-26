@@ -59,7 +59,7 @@ export const useAuth = () => {
       if (user.role.name === 'viewer') {
         router.push('/explore')
       } else {
-        router.push('/admin')
+        router.push('/dashboard')
       }
     },
     onError: error => {
@@ -84,7 +84,7 @@ export const useAuth = () => {
       if (user.role.name === 'viewer') {
         router.push('/explore')
       } else {
-        router.push('/admin')
+        router.push('/dashboard')
       }
     },
     onError: error => {
