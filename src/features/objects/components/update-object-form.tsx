@@ -9,7 +9,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, Video, FileText, X } from 'lucide-react'
-import { Textarea } from '@/components/ui/textarea'
 import { useObject } from '@/features/objects/api/object'
 import { useUpdateObject } from '@/features/objects/api/object-mutation'
 import { useCategories } from '@/features/master-data/api/categories'
@@ -17,6 +16,7 @@ import { useMaterials } from '@/features/master-data/api/materials'
 import { useLocations, useSubLocations } from '@/features/master-data/api/location'
 import type { IObjectUpdate } from '@/types/objects'
 import { FileDropzone } from '@/components/shared/file-dropzone'
+import RichTextEditor from '@/components/shared/rich-text-editor'
 import { DatePicker } from '@/components/shared/date-picker'
 import { getMediaUrl } from '@/utils/helper'
 import { useRouter } from 'next/navigation'
@@ -484,7 +484,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
             <FormItem className='flex-1'>
               <FormLabel>Description - Indonesia</FormLabel>
               <FormControl>
-                <Textarea placeholder='Object description' {...field} />
+                <RichTextEditor value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -497,7 +497,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
             <FormItem className='flex-1'>
               <FormLabel>Description - English</FormLabel>
               <FormControl>
-                <Textarea placeholder='Object description in English' {...field} />
+                <RichTextEditor value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

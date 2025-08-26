@@ -15,7 +15,7 @@ import { useMaterials } from '@/features/master-data/api/materials'
 import { useLocations, useSubLocations } from '@/features/master-data/api/location'
 import type { IObjectCreate } from '@/types/objects'
 import { FileDropzone } from '@/components/shared/file-dropzone'
-import { Textarea } from '@/components/ui/textarea'
+import RichTextEditor from '@/components/shared/rich-text-editor'
 import { DatePicker } from '@/components/shared/date-picker'
 import { useRouter } from 'next/navigation'
 
@@ -354,7 +354,7 @@ export const CreateObjectForm = () => {
             <FormItem className='flex-1'>
               <FormLabel>Description - Indonesia</FormLabel>
               <FormControl>
-                <Textarea placeholder='Object description' {...field} />
+                <RichTextEditor value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -367,7 +367,7 @@ export const CreateObjectForm = () => {
             <FormItem className='flex-1'>
               <FormLabel>Description - English</FormLabel>
               <FormControl>
-                <Textarea placeholder='Object description in English' {...field} />
+                <RichTextEditor value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
