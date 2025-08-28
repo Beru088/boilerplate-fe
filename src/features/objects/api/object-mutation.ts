@@ -124,6 +124,7 @@ export const useRestoreObject = () => {
     },
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['objects'] })
+      queryClient.invalidateQueries({ queryKey: ['deleted-objects'] })
       queryClient.invalidateQueries({ queryKey: ['object', id] })
     }
   })

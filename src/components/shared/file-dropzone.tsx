@@ -29,10 +29,12 @@ export const FileDropzone = ({
 }: FileDropzoneProps) => {
   const uniqueBySig = (list: File[]) => {
     const seen = new Set<string>()
+
     return list.filter(f => {
       const sig = `${f.name}-${f.size}-${(f as any).lastModified}`
       if (seen.has(sig)) return false
       seen.add(sig)
+
       return true
     })
   }
@@ -140,7 +142,7 @@ export const FileDropzone = ({
       ) : (
         <div className='w-full min-w-0 overflow-x-auto overflow-y-hidden'>
           <div className='flex w-max gap-3 pr-2 pb-1'>
-            {previews.map((p, idx) => (
+            {previews.map(p => (
               <div
                 key={p.key}
                 className={cn('relative shrink-0 rounded-lg border', p.isPortrait ? 'h-36 w-28' : 'h-28 w-44')}

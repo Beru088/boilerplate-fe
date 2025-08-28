@@ -389,7 +389,15 @@ export const CreateObjectForm = () => {
             </FormItem>
           )}
         />
-        <div className='flex justify-end'>
+        <div className='flex justify-end gap-4'>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => router.push('/object-archive')}
+            disabled={createMutation.isPending}
+          >
+            Cancel
+          </Button>
           <Button
             type='submit'
             disabled={createMutation.isPending || categoriesLoading || materialsLoading || !files.length}

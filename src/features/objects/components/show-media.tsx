@@ -116,6 +116,7 @@ export const ShowMedia = ({
 
     const existingItems: MediaItem[] = existingMedia.map(m => {
       const positionData = positionArray.find(p => p.id === m.id) || { position: m.position, isCover: m.isCover }
+
       return {
         id: m.id,
         url: m.url,
@@ -127,6 +128,7 @@ export const ShowMedia = ({
     })
 
     const combinedItems = [...existingItems, ...newItems]
+
     return combinedItems.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
   }, [files, existingMedia, positionArray, mode])
 
@@ -276,6 +278,7 @@ export const ShowMedia = ({
   const isPortraitImage = (item: MediaItem) => {
     if (!isImageLike(item.mime, item.url)) return false
     const filename = item.file?.name || item.url || ''
+
     return /portrait|vertical|tall/i.test(filename)
   }
 
