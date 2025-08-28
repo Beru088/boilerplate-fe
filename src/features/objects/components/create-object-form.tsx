@@ -14,7 +14,8 @@ import { useCategories } from '@/features/master-data/api/categories'
 import { useMaterials } from '@/features/master-data/api/materials'
 import { useLocations, useSubLocations } from '@/features/master-data/api/location'
 import type { IObjectCreate } from '@/types/objects'
-import { FileDropzone } from '@/components/shared/file-dropzone'
+
+import { ShowMedia } from '@/features/objects/components/show-media'
 import RichTextEditor from '@/components/shared/rich-text-editor'
 import { DatePicker } from '@/components/shared/date-picker'
 import { useRouter } from 'next/navigation'
@@ -43,6 +44,9 @@ export const CreateObjectForm = () => {
   const { materials, materialsLoading } = useMaterials()
   const { locations, locationsLoading } = useLocations()
   const [files, setFiles] = useState<File[]>([])
+  const [positionArray, setPositionArray] = useState<Array<{ id: number | null; position: number; isCover: boolean }>>(
+    []
+  )
   const [inputText, setInputText] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
@@ -87,13 +91,36 @@ export const CreateObjectForm = () => {
     currentLocationId && currentLocationId > 0 ? filteredSubLocationsLoading : subLocationsLoading
 
   const onSubmit = async (values: CreateData) => {
+    let finalCoverIndex = undefined
+    if (files.length > 0) {
+      // Find if any new file is set as cover in the positionArray
+      // Look for null IDs (new files) that are marked as cover
+      const coverPosition = positionArray.find(pos => pos.id === null && pos.isCover)
+      if (coverPosition) {
+        // Use the position directly as the cover index
+        finalCoverIndex = coverPosition.position
+      }
+    }
+
     await createMutation.mutateAsync({
       ...(values as IObjectCreate),
       files,
+      coverIndex: finalCoverIndex,
       tags: selectedTags
     })
-    form.reset()
+    form.reset({
+      code: '',
+      title: '',
+      description: '',
+      categoryId: 0,
+      materialId: 0,
+      locationId: 0,
+      subLocationId: 0,
+      locationDetails: '',
+      coverIndex: 0
+    })
     setFiles([])
+    setPositionArray([])
     setSelectedTags([])
     setInputText('')
     router.push('/object-archive')
@@ -135,23 +162,10 @@ export const CreateObjectForm = () => {
             control={form.control}
             name='code'
             render={({ field }) => (
-              <FormItem>
+              <FormItem className='flex-1'>
                 <FormLabel>Code</FormLabel>
                 <FormControl>
                   <Input placeholder='Object code' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='dateTaken'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date Taken</FormLabel>
-                <FormControl>
-                  <DatePicker value={field.value} onChange={field.onChange} placeholder='Select date taken' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -165,7 +179,7 @@ export const CreateObjectForm = () => {
                 <FormLabel>Category</FormLabel>
                 <Select
                   onValueChange={v => field.onChange(parseInt(v))}
-                  defaultValue={field.value ? String(field.value) : undefined}
+                  value={field.value ? String(field.value) : undefined}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -192,7 +206,7 @@ export const CreateObjectForm = () => {
                 <FormLabel>Material</FormLabel>
                 <Select
                   onValueChange={v => field.onChange(parseInt(v))}
-                  defaultValue={field.value ? String(field.value) : undefined}
+                  value={field.value ? String(field.value) : undefined}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -211,21 +225,14 @@ export const CreateObjectForm = () => {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name='coverIndex'
+            name='dateTaken'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thumbnail</FormLabel>
+                <FormLabel>Date Taken</FormLabel>
                 <FormControl>
-                  <Input
-                    type='number'
-                    min={0}
-                    placeholder='0'
-                    value={(field.value as any) ?? ''}
-                    onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value))}
-                  />
+                  <DatePicker value={field.value} onChange={field.onChange} placeholder='Select date taken' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -345,7 +352,16 @@ export const CreateObjectForm = () => {
         </div>
         <div className='space-y-2'>
           <div className='text-sm font-medium'>Media files</div>
-          <FileDropzone files={files} onChange={setFiles} multiple />
+          <ShowMedia
+            files={files}
+            existingMedia={[]}
+            onChange={setFiles}
+            onPositionChange={newPositionArray => {
+              setPositionArray(newPositionArray)
+            }}
+            multiple
+            mode='create'
+          />
         </div>
         <FormField
           control={form.control}

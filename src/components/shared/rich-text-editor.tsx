@@ -1,10 +1,10 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import { TextStyle } from '@tiptap/extension-text-style'
-import { FontSize } from '@tiptap/extension-font-size'
 import { Button } from '@/components/ui/button'
 import {
   Bold,
@@ -17,16 +17,12 @@ import {
   AlignRight,
   Undo,
   Redo,
-  Heading1,
-  Heading2,
-  Heading3,
   Code,
   Quote,
   Minus,
   Strikethrough
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import '@/styles/tiptap.css'
 
@@ -41,14 +37,11 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3]
-        }
+        heading: false
       }),
       TextStyle,
-      FontSize,
       TextAlign.configure({
-        types: ['heading', 'paragraph'],
+        types: ['paragraph'],
         alignments: ['left', 'center', 'right']
       })
     ],
@@ -59,6 +52,12 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
       onChange?.(editor.getHTML())
     }
   })
+
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value)
+    }
+  }, [editor, value])
 
   if (!editor) {
     return null
@@ -122,32 +121,7 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
           >
             <Redo className='h-4 w-4' />
           </ToolbarButton>
-
           <div className='bg-border mx-1 h-4 w-px' />
-
-          <div className='flex items-center gap-1'>
-            <Select
-              value={editor.getAttributes('textStyle').fontSize || '16px'}
-              onValueChange={value => editor.chain().focus().setFontSize(value).run()}
-            >
-              <SelectTrigger className='h-8 w-20'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='12px'>12px</SelectItem>
-                <SelectItem value='14px'>14px</SelectItem>
-                <SelectItem value='16px'>16px</SelectItem>
-                <SelectItem value='18px'>18px</SelectItem>
-                <SelectItem value='20px'>20px</SelectItem>
-                <SelectItem value='24px'>24px</SelectItem>
-                <SelectItem value='28px'>28px</SelectItem>
-                <SelectItem value='32px'>32px</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className='bg-border mx-1 h-4 w-px' />
-
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive('bold')}
@@ -183,33 +157,6 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
           >
             <Code className='h-4 w-4' />
           </ToolbarButton>
-
-          <div className='bg-border mx-1 h-4 w-px' />
-
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            isActive={editor.isActive('heading', { level: 1 })}
-            tooltip='Heading 1'
-          >
-            <Heading1 className='h-4 w-4' />
-          </ToolbarButton>
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            isActive={editor.isActive('heading', { level: 2 })}
-            tooltip='Heading 2'
-          >
-            <Heading2 className='h-4 w-4' />
-          </ToolbarButton>
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            isActive={editor.isActive('heading', { level: 3 })}
-            tooltip='Heading 3'
-          >
-            <Heading3 className='h-4 w-4' />
-          </ToolbarButton>
-
-          <div className='bg-border mx-1 h-4 w-px' />
-
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editor.isActive('bulletList')}
@@ -234,9 +181,7 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
           <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} tooltip='Horizontal Rule'>
             <Minus className='h-4 w-4' />
           </ToolbarButton>
-
           <div className='bg-border mx-1 h-4 w-px' />
-
           <ToolbarButton
             onClick={() => editor.chain().focus().setTextAlign('left').run()}
             isActive={editor.isActive({ textAlign: 'left' })}

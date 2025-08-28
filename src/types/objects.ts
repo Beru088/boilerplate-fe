@@ -77,7 +77,7 @@ export interface IObjectUpdateWithMedia extends IObjectUpdate {
   mediaRemoveIds?: number[]
   mediaUpdates?: IObjectMediaUpdateItem[]
   deleteMediaIds?: number[]
-  coverIndexNew?: number
+  coverIndex?: number
   files?: File[]
 }
 

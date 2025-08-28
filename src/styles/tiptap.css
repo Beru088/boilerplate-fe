@@ -35,49 +35,6 @@
   margin: 0.5em 0;
 }
 
-.ProseMirror h1,
-.ProseMirror h2,
-.ProseMirror h3,
-.ProseMirror h4,
-.ProseMirror h5,
-.ProseMirror h6 {
-  line-height: 1.1;
-  margin: 1em 0 0.5em 0;
-}
-
-.ProseMirror h1[style*='text-align: center'],
-.ProseMirror h2[style*='text-align: center'],
-.ProseMirror h3[style*='text-align: center'] {
-  text-align: center !important;
-}
-
-.ProseMirror h1[style*='text-align: right'],
-.ProseMirror h2[style*='text-align: right'],
-.ProseMirror h3[style*='text-align: right'] {
-  text-align: right !important;
-}
-
-.ProseMirror h1[style*='text-align: left'],
-.ProseMirror h2[style*='text-align: left'],
-.ProseMirror h3[style*='text-align: left'] {
-  text-align: left !important;
-}
-
-.ProseMirror h1 {
-  font-size: 2em;
-  font-weight: bold;
-}
-
-.ProseMirror h2 {
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-.ProseMirror h3 {
-  font-size: 1.17em;
-  font-weight: bold;
-}
-
 .ProseMirror code {
   background-color: rgba(97, 97, 97, 0.1);
   color: #616161;

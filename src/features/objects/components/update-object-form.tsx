@@ -8,17 +8,17 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, Video, FileText, X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { useObject } from '@/features/objects/api/object'
 import { useUpdateObject } from '@/features/objects/api/object-mutation'
 import { useCategories } from '@/features/master-data/api/categories'
 import { useMaterials } from '@/features/master-data/api/materials'
 import { useLocations, useSubLocations } from '@/features/master-data/api/location'
 import type { IObjectUpdate } from '@/types/objects'
-import { FileDropzone } from '@/components/shared/file-dropzone'
+import { ShowMedia } from '@/features/objects/components/show-media'
 import RichTextEditor from '@/components/shared/rich-text-editor'
 import { DatePicker } from '@/components/shared/date-picker'
-import { getMediaUrl } from '@/utils/helper'
+
 import { useRouter } from 'next/navigation'
 
 const schemaUpdate = z.object({
@@ -47,10 +47,10 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
   const { locations, locationsLoading } = useLocations()
 
   const [files, setFiles] = useState<File[]>([])
-  const [coverIndexNew, setCoverIndexNew] = useState<number | undefined>(undefined)
   const [deleteMediaIds, setDeleteMediaIds] = useState<number[]>([])
-  const [positionsById, setPositionsById] = useState<Record<number, number>>({})
-  const [coverExistingId, setCoverExistingId] = useState<number | undefined>(undefined)
+  const [positionArray, setPositionArray] = useState<Array<{ id: number | null; position: number; isCover: boolean }>>(
+    []
+  )
   const [inputText, setInputText] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
 
@@ -112,53 +112,88 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
         dateTaken: object.dateTaken ? new Date(object.dateTaken) : undefined,
         categoryId: object.category?.id || 0,
         materialId: object.material?.id || 0,
-        locationId: locationId,
-        subLocationId: subLocationId,
+        locationId: locationId || 0,
+        subLocationId: subLocationId || 0,
         locationDetails: locationDetails || ''
-      } as any)
-
-      const nextPositions: Record<number, number> = {}
-      object.media?.forEach(m => {
-        nextPositions[m.id] = m.position
       })
-      setPositionsById(nextPositions)
-      setCoverExistingId(object.media?.find(m => m.isCover)?.id)
+
+      // Initialize position array from existing media
+      const initialPositionArray =
+        object.media?.map(m => ({
+          id: m.id,
+          position: m.position,
+          isCover: m.isCover
+        })) || []
+      setPositionArray(initialPositionArray)
       setDeleteMediaIds([])
 
       const existingTags = object.objectTags?.map(ot => ot.tag.name.toUpperCase()) || []
       setSelectedTags(existingTags)
       setInputText('')
     }
-  }, [object])
+  }, [object, form])
 
   const onSubmit = async (values: UpdateData) => {
-    const mediaUpdates = (object?.media || [])
-      .filter(m => !deleteMediaIds.includes(m.id))
-      .map(m => {
-        const nextPos = positionsById[m.id]
-        const changedPos = typeof nextPos === 'number' && nextPos !== m.position
-        const willBeCover = coverExistingId === m.id
-        const update: any = { id: m.id }
-        if (changedPos) update.position = nextPos
-        if (willBeCover) update.isCover = true
+    console.log('Form submission started with values:', values)
+    console.log('Current state:', { deleteMediaIds, files: files.length, selectedTags })
+    console.log('Current positionArray:', positionArray)
 
-        return update
+    // Create media updates from position array
+    const mediaUpdates = positionArray
+      .filter(pos => pos.id !== null && !deleteMediaIds.includes(pos.id))
+      .map(pos => {
+        const originalMedia = object?.media?.find(m => m.id === pos.id)
+        if (!originalMedia) return null
+
+        const hasPositionChange = pos.position !== originalMedia.position
+        const hasCoverChange = pos.isCover !== originalMedia.isCover
+
+        if (hasPositionChange || hasCoverChange) {
+          return {
+            id: pos.id,
+            position: pos.position,
+            isCover: pos.isCover
+          }
+        }
+        return null
       })
-      .filter(u => 'position' in u || 'isCover' in u)
+      .filter(Boolean)
+
+    console.log('Media updates to send:', mediaUpdates)
+
+    // Determine the final cover index for new files from positionArray
+    let finalCoverIndex = undefined
+    if (files.length > 0) {
+      const existingMediaCount = (object?.media || []).filter(m => !deleteMediaIds.includes(m.id)).length
+
+      // Find if any new file is set as cover in the positionArray
+      for (let i = 0; i < files.length; i++) {
+        const globalIndex = existingMediaCount + i
+        const isCover = positionArray.some(pos => pos.position === globalIndex && pos.isCover)
+        if (isCover) {
+          finalCoverIndex = i
+          console.log('Found new file as cover at index:', finalCoverIndex)
+          break
+        }
+      }
+    }
+
+    const payload = {
+      ...(values as IObjectUpdate),
+      deleteMediaIds,
+      mediaUpdates,
+      coverIndex: finalCoverIndex,
+      files,
+      tags: selectedTags
+    } as any
+
+    console.log('Final payload:', payload)
 
     await updateMutation.mutateAsync({
       id,
-      payload: {
-        ...(values as IObjectUpdate),
-        deleteMediaIds,
-        mediaUpdates,
-        coverIndexNew,
-        files,
-        tags: selectedTags
-      } as any
+      payload
     })
     setFiles([])
-    setCoverIndexNew(undefined)
     setDeleteMediaIds([])
     setSelectedTags([])
     setInputText('')
@@ -201,23 +236,10 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
             control={form.control}
             name='code'
             render={({ field }) => (
-              <FormItem>
+              <FormItem className='flex-1'>
                 <FormLabel>Code</FormLabel>
                 <FormControl>
                   <Input placeholder='Object code' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='dateTaken'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date Taken</FormLabel>
-                <FormControl>
-                  <DatePicker value={field.value} onChange={field.onChange} placeholder='Select date taken' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -279,18 +301,12 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
           />
           <FormField
             control={form.control}
-            name='coverIndex'
+            name='dateTaken'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thumbnail</FormLabel>
+                <FormLabel>Date Taken</FormLabel>
                 <FormControl>
-                  <Input
-                    type='number'
-                    min={0}
-                    placeholder='0'
-                    value={(field.value as any) ?? ''}
-                    onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value))}
-                  />
+                  <DatePicker value={field.value} onChange={field.onChange} placeholder='Select date taken' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -409,73 +425,38 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
           </div>
         </div>
         <div className='space-y-2'>
-          <div className='text-sm font-medium'>Existing media</div>
-          <div className='w-full min-w-0 overflow-x-auto overflow-y-hidden'>
-            <div className='flex w-max gap-3 pr-2 pb-1'>
-              {(object?.media || []).map(m => {
-                const isImage = (m.mime || '').startsWith('image/') || /(png|jpg|jpeg|gif|webp)$/i.test(m.url || '')
-                const isVideo = (m.mime || '').startsWith('video/') || /(mp4|webm|mov|mkv)$/i.test(m.url || '')
-                const filename = (m.url || '').split('/').pop() || ''
-                const markedDeleted = deleteMediaIds.includes(m.id)
-
-                return (
-                  <div
-                    key={`ex-${m.id}`}
-                    className={`relative h-28 w-44 shrink-0 overflow-hidden rounded-lg border ${markedDeleted ? 'opacity-60' : ''}`}
-                  >
-                    {isImage ? (
-                      <img src={getMediaUrl(m.url)} alt={filename} className='h-full w-full object-cover' />
-                    ) : isVideo ? (
-                      <div className='bg-muted flex h-full w-full items-center justify-center'>
-                        <Video className='h-8 w-8' />
-                      </div>
-                    ) : (
-                      <div className='bg-muted flex h-full w-full items-center justify-center'>
-                        <FileText className='h-8 w-8' />
-                      </div>
-                    )}
-                    <div className='absolute right-0 bottom-0 left-0 truncate bg-black/50 px-2 py-1 text-[10px] text-white'>
-                      {filename}
-                    </div>
-                    <div className='absolute top-1 left-1 flex items-center gap-2'>
-                      <input
-                        type='radio'
-                        name='existing-cover'
-                        checked={coverExistingId === m.id}
-                        onChange={() => setCoverExistingId(m.id)}
-                        title='Make cover'
-                      />
-                    </div>
-                    <div className='absolute bottom-1 left-1 flex items-center gap-1 rounded bg-black/40 p-1 text-[10px] text-white'>
-                      <span>Pos</span>
-                      <input
-                        className='h-5 w-10 rounded bg-white/80 px-1 text-[10px] text-black outline-none'
-                        type='number'
-                        value={typeof positionsById[m.id] === 'number' ? positionsById[m.id] : m.position}
-                        onChange={e => setPositionsById(prev => ({ ...prev, [m.id]: parseInt(e.target.value || '0') }))}
-                      />
-                    </div>
-                    <button
-                      type='button'
-                      className='text-muted-foreground hover:text-foreground absolute top-1 right-1 rounded bg-white/80 p-1 hover:bg-white'
-                      onClick={() =>
-                        setDeleteMediaIds(prev =>
-                          prev.includes(m.id) ? prev.filter(id => id !== m.id) : [...prev, m.id]
-                        )
-                      }
-                      aria-label='Delete media'
-                    >
-                      <X className='h-4 w-4' />
-                    </button>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-        <div className='space-y-2'>
-          <div className='text-sm font-medium'>Add new media files</div>
-          <FileDropzone files={files} onChange={setFiles} multiple />
+          <div className='text-sm font-medium'>Media files</div>
+          <ShowMedia
+            key={JSON.stringify(positionArray)} // Force re-render when position array changes
+            files={files}
+            existingMedia={
+              object?.media
+                ?.filter(m => !deleteMediaIds.includes(m.id))
+                .map(m => {
+                  const positionData = positionArray.find(p => p.id === m.id) || {
+                    position: m.position,
+                    isCover: m.isCover
+                  }
+                  return {
+                    id: m.id,
+                    url: m.url,
+                    mime: m.mime,
+                    position: positionData.position,
+                    isCover: positionData.isCover
+                  }
+                }) || []
+            }
+            onChange={setFiles}
+            onPositionChange={newPositionArray => {
+              console.log('Position array updated:', newPositionArray)
+              setPositionArray(newPositionArray)
+            }}
+            onDeleteMedia={mediaIds => {
+              setDeleteMediaIds(prev => [...prev, ...mediaIds])
+            }}
+            multiple
+            mode='edit'
+          />
         </div>
         <FormField
           control={form.control}
@@ -484,7 +465,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
             <FormItem className='flex-1'>
               <FormLabel>Description - Indonesia</FormLabel>
               <FormControl>
-                <RichTextEditor value={field.value} onChange={field.onChange} />
+                <RichTextEditor key={`description-${object?.id}`} value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -497,7 +478,7 @@ export const UpdateObjectForm = ({ id }: { id: number }) => {
             <FormItem className='flex-1'>
               <FormLabel>Description - English</FormLabel>
               <FormControl>
-                <RichTextEditor value={field.value} onChange={field.onChange} />
+                <RichTextEditor key={`descriptionEn-${object?.id}`} value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
