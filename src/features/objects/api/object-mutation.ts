@@ -11,13 +11,18 @@ export const useCreateObject = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: IObjectCreate & { files?: File[] }): Promise<IApiResponse<IObject>> => {
+    mutationFn: async (
+      payload: IObjectCreate & { files?: File[]; coverIndex?: number }
+    ): Promise<IApiResponse<IObject>> => {
       const formData = new FormData()
-      const { files, ...dataJson } = payload as any
+      const { files, coverIndex, ...dataJson } = payload as any
 
       formData.append('data', JSON.stringify(dataJson))
       if (files && files.length) {
         files.forEach((f: File) => formData.append('files', f))
+      }
+      if (coverIndex !== undefined) {
+        formData.append('coverIndex', JSON.stringify(coverIndex))
       }
       const response = await service.post('/objects', formData)
 
@@ -41,14 +46,45 @@ export const useUpdateObject = () => {
       payload
     }: {
       id: number
-      payload: IObjectUpdate & { files?: File[] }
+      payload: IObjectUpdate & {
+        files?: File[]
+        deleteMediaIds?: number[]
+        mediaUpdates?: any[]
+        coverIndex?: number
+      }
     }): Promise<IApiResponse<IObject>> => {
+      console.log('Mutation payload received:', payload)
+
       const formData = new FormData()
-      const { files, ...dataJson } = payload as any
+      const { files, deleteMediaIds, mediaUpdates, coverIndex, ...dataJson } = payload as any
+
+      console.log('Form data being sent:', {
+        dataJson,
+        filesCount: files?.length || 0,
+        deleteMediaIds,
+        mediaUpdates,
+        coverIndex
+      })
+
       formData.append('data', JSON.stringify(dataJson))
       if (files && files.length) {
         files.forEach((f: File) => formData.append('files', f))
       }
+      if (deleteMediaIds && deleteMediaIds.length) {
+        formData.append('deleteMediaIds', JSON.stringify(deleteMediaIds))
+      }
+      if (mediaUpdates && mediaUpdates.length) {
+        formData.append('mediaUpdates', JSON.stringify(mediaUpdates))
+      }
+      if (coverIndex !== undefined) {
+        formData.append('coverIndex', JSON.stringify(coverIndex))
+      }
+
+      console.log('FormData entries:')
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value)
+      }
+
       const response = await service.put(`/objects/${id}`, formData)
 
       return response.data
@@ -88,6 +124,7 @@ export const useRestoreObject = () => {
     },
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['objects'] })
+      queryClient.invalidateQueries({ queryKey: ['deleted-objects'] })
       queryClient.invalidateQueries({ queryKey: ['object', id] })
     }
   })

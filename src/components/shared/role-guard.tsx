@@ -3,9 +3,8 @@
 import { useAuth } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { AlertTriangle, ArrowLeft, Home } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Home, Loader2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface RoleGuardProps {
@@ -40,12 +39,12 @@ const RoleGuard = ({
 
   const containerClass = fullScreen ? 'min-h-screen' : 'h-full w-full'
 
-  if (isLoading) {
+  if (isLoading || isAuthenticated === undefined) {
     return (
       <div className={`flex ${containerClass} items-center justify-center`}>
-        <div className='space-y-4'>
-          <Skeleton className='h-8 w-64' />
-          <Skeleton className='h-4 w-48' />
+        <div className='flex flex-col items-center space-y-4'>
+          <Loader2 className='text-primary h-8 w-8 animate-spin' />
+          <p className='text-muted-foreground text-sm'>Loading...</p>
         </div>
       </div>
     )

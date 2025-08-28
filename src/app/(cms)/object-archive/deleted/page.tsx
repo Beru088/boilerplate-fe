@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { MoreHorizontal, Package, Search, Archive } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import ListPagination from '@/components/shared/pagination'
 import { IObject } from '@/types/objects'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -25,9 +26,18 @@ type ListParams = {
 }
 
 const DeletedObjectsPage = () => {
+  const router = useRouter()
   const [params, setParams] = useState<ListParams>({ search: '', skip: 0, take: 10 })
   const { deletedObjects, deletedObjectsLoading, deletedObjectsFetched, pagination } = useDeletedObjects(params)
   const restore = useRestoreObject()
+
+  const handleRestore = (id: number) => {
+    restore.mutate(id, {
+      onSuccess: () => {
+        router.push('/object-archive')
+      }
+    })
+  }
 
   const totalPages = pagination?.totalPages ?? 1
 
@@ -135,7 +145,7 @@ const DeletedObjectsPage = () => {
                                   View
                                 </Link>
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => restore.mutate(obj.id)} className='text-green-600'>
+                              <DropdownMenuItem onClick={() => handleRestore(obj.id)} className='text-green-600'>
                                 Restore
                               </DropdownMenuItem>
                             </DropdownMenuContent>
