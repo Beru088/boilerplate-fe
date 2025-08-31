@@ -1,8 +1,13 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { service } from '@/lib/api-client'
-import type { IObjectChangeRequest, IChangeRequestQuery, IChangeRequestListResponse } from '@/types/change-requests'
+import type {
+  IObjectChangeRequest,
+  IChangeRequestQuery,
+  IChangeRequestListResponse,
+  IChangeReviewInput
+} from '@/types/change-requests'
 import type { IApiResponse } from '@/types'
 
 export const useChangeRequests = (params: IChangeRequestQuery) => {
@@ -54,4 +59,22 @@ export const useChangeRequest = (id?: number) => {
     error,
     refetch
   }
+}
+
+export const reviewChangeRequest = async (id: number, review: IChangeReviewInput) => {
+  const response = await service.put(`/objects/change-request/${id}/review`, review)
+
+  return response.data
+}
+
+export const useReviewChangeRequest = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, review }: { id: number; review: IChangeReviewInput }) => reviewChangeRequest(id, review),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['change-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['change-request'] })
+    }
+  })
 }

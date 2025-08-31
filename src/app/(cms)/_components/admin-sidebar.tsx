@@ -131,6 +131,16 @@ const data = {
 
 export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useAuth()
+  const mainItems = isAdmin(user)
+    ? data.navMain
+    : data.navMain.map(section =>
+        section.items
+          ? {
+              ...section,
+              items: section.items.filter(sub => sub.url !== '/object-archive/deleted')
+            }
+          : section
+      )
 
   return (
     <Sidebar collapsible='icon' {...props}>
@@ -149,7 +159,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <AdminMain items={data.navMain} />
+        <AdminMain items={mainItems} />
         {isAdmin(user) && <AdminMain title='Admin Platform' items={data.navAdmin} />}
       </SidebarContent>
       <SidebarFooter>

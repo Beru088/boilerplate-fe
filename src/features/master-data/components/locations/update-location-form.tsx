@@ -41,14 +41,19 @@ interface UpdateLocationFormProps {
 
 export default function UpdateLocationForm({ location, open, onOpenChange, onSuccess }: UpdateLocationFormProps) {
   const mutation = useUpdateLocation()
-  const { countries, countriesLoading } = useCountries()
-  const { provinces, provincesLoading } = useProvinces()
-  const { cities, citiesLoading } = useCities()
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', description: '', countryId: 0, provinceId: 0, cityId: 0 }
   })
+
+  // Get form values for cascading dropdowns
+  const countryId = form.watch('countryId')
+  const provinceId = form.watch('provinceId')
+
+  const { countries, countriesLoading } = useCountries()
+  const { provinces, provincesLoading } = useProvinces(countryId)
+  const { cities, citiesLoading } = useCities(provinceId)
 
   useEffect(() => {
     if (location) {
@@ -80,6 +85,37 @@ export default function UpdateLocationForm({ location, open, onOpenChange, onSuc
     } catch {
       toast.error('Failed to update location')
     }
+  }
+
+  // Handle country selection - reset province and city
+  const handleCountryChange = (countryId: number) => {
+    form.setValue('countryId', countryId)
+    form.setValue('provinceId', 0)
+    form.setValue('cityId', 0)
+  }
+
+  // Handle province selection - reset city
+  const handleProvinceChange = (provinceId: number) => {
+    form.setValue('provinceId', provinceId)
+    form.setValue('cityId', 0)
+  }
+
+  // Handle city selection - auto-select province and country if possible
+  const handleCityChange = (cityId: number) => {
+    const selectedCity = cities.find(city => city.id === cityId)
+    if (selectedCity) {
+      // Auto-select the province for this city
+      const province = provinces.find(p => p.id === selectedCity.provinceId)
+      if (province) {
+        form.setValue('provinceId', province.id)
+        // Auto-select the country for this province
+        const country = countries.find(c => c.id === province.countryId)
+        if (country) {
+          form.setValue('countryId', country.id)
+        }
+      }
+    }
+    form.setValue('cityId', cityId)
   }
 
   const handleOpenChange = (open: boolean) => {
@@ -117,7 +153,7 @@ export default function UpdateLocationForm({ location, open, onOpenChange, onSuc
                   <FormItem className='flex-1'>
                     <FormLabel>Country</FormLabel>
                     <Select
-                      onValueChange={v => field.onChange(parseInt(v))}
+                      onValueChange={v => handleCountryChange(parseInt(v))}
                       value={field.value ? String(field.value) : undefined}
                     >
                       <FormControl className='w-full'>
@@ -144,12 +180,21 @@ export default function UpdateLocationForm({ location, open, onOpenChange, onSuc
                   <FormItem className='flex-1'>
                     <FormLabel>Province</FormLabel>
                     <Select
-                      onValueChange={v => field.onChange(parseInt(v))}
+                      onValueChange={v => handleProvinceChange(parseInt(v))}
                       value={field.value ? String(field.value) : undefined}
+                      disabled={!countryId || countryId === 0}
                     >
                       <FormControl className='w-full'>
                         <SelectTrigger>
-                          <SelectValue placeholder={provincesLoading ? 'Loading...' : 'Select province'} />
+                          <SelectValue
+                            placeholder={
+                              !countryId || countryId === 0
+                                ? 'Select country first'
+                                : provincesLoading
+                                  ? 'Loading...'
+                                  : 'Select province'
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -171,12 +216,21 @@ export default function UpdateLocationForm({ location, open, onOpenChange, onSuc
                   <FormItem className='flex-1'>
                     <FormLabel>City</FormLabel>
                     <Select
-                      onValueChange={v => field.onChange(parseInt(v))}
+                      onValueChange={v => handleCityChange(parseInt(v))}
                       value={field.value ? String(field.value) : undefined}
+                      disabled={!provinceId || provinceId === 0}
                     >
                       <FormControl className='w-full'>
                         <SelectTrigger>
-                          <SelectValue placeholder={citiesLoading ? 'Loading...' : 'Select city'} />
+                          <SelectValue
+                            placeholder={
+                              !provinceId || provinceId === 0
+                                ? 'Select province first'
+                                : citiesLoading
+                                  ? 'Loading...'
+                                  : 'Select city'
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
