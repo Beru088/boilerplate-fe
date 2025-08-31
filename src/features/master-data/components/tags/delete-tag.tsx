@@ -8,10 +8,9 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from '@/components/ui/dialog'
-import { Trash2, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useDeleteTag } from '@/features/master-data/api/tags'
 import type { ITag } from '@/types/tags'
 
@@ -41,11 +40,6 @@ export default function DeleteTag({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant='outline' size='sm' className='text-red-600 hover:text-red-700'>
-          <Trash2 className='mr-2 h-4 w-4' /> Delete
-        </Button>
-      </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Delete Tag</DialogTitle>

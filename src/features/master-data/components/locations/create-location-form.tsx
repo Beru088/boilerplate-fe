@@ -35,14 +35,18 @@ type FormData = z.infer<typeof schema>
 export default function CreateLocationForm() {
   const [open, setOpen] = useState(false)
   const mutation = useCreateLocation()
-  const { countries, countriesLoading } = useCountries()
-  const { provinces, provincesLoading } = useProvinces()
-  const { cities, citiesLoading } = useCities()
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { name: '', description: '', countryId: 0, provinceId: 0, cityId: 0 }
   })
+
+  const countryId = form.watch('countryId')
+  const provinceId = form.watch('provinceId')
+
+  const { countries, countriesLoading } = useCountries()
+  const { provinces, provincesLoading } = useProvinces(countryId)
+  const { cities, citiesLoading } = useCities(provinceId)
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -59,6 +63,32 @@ export default function CreateLocationForm() {
     } catch {
       toast.error('Failed to create location')
     }
+  }
+
+  const handleCountryChange = (countryId: number) => {
+    form.setValue('countryId', countryId)
+    form.setValue('provinceId', 0)
+    form.setValue('cityId', 0)
+  }
+
+  const handleProvinceChange = (provinceId: number) => {
+    form.setValue('provinceId', provinceId)
+    form.setValue('cityId', 0)
+  }
+
+  const handleCityChange = (cityId: number) => {
+    const selectedCity = cities.find(city => city.id === cityId)
+    if (selectedCity) {
+      const province = provinces.find(p => p.id === selectedCity.provinceId)
+      if (province) {
+        form.setValue('provinceId', province.id)
+        const country = countries.find(c => c.id === province.countryId)
+        if (country) {
+          form.setValue('countryId', country.id)
+        }
+      }
+    }
+    form.setValue('cityId', cityId)
   }
 
   const handleOpenChange = (open: boolean) => {
@@ -101,7 +131,7 @@ export default function CreateLocationForm() {
                   <FormItem className='flex-1'>
                     <FormLabel>Country</FormLabel>
                     <Select
-                      onValueChange={v => field.onChange(parseInt(v))}
+                      onValueChange={v => handleCountryChange(parseInt(v))}
                       value={field.value ? String(field.value) : undefined}
                     >
                       <FormControl className='w-full'>
@@ -128,12 +158,21 @@ export default function CreateLocationForm() {
                   <FormItem className='flex-1'>
                     <FormLabel>Province</FormLabel>
                     <Select
-                      onValueChange={v => field.onChange(parseInt(v))}
+                      onValueChange={v => handleProvinceChange(parseInt(v))}
                       value={field.value ? String(field.value) : undefined}
+                      disabled={!countryId || countryId === 0}
                     >
                       <FormControl className='w-full'>
                         <SelectTrigger>
-                          <SelectValue placeholder={provincesLoading ? 'Loading...' : 'Select province'} />
+                          <SelectValue
+                            placeholder={
+                              !countryId || countryId === 0
+                                ? 'Select country first'
+                                : provincesLoading
+                                  ? 'Loading...'
+                                  : 'Select province'
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -155,12 +194,21 @@ export default function CreateLocationForm() {
                   <FormItem className='flex-1'>
                     <FormLabel>City</FormLabel>
                     <Select
-                      onValueChange={v => field.onChange(parseInt(v))}
+                      onValueChange={v => handleCityChange(parseInt(v))}
                       value={field.value ? String(field.value) : undefined}
+                      disabled={!provinceId || provinceId === 0}
                     >
                       <FormControl className='w-full'>
                         <SelectTrigger>
-                          <SelectValue placeholder={citiesLoading ? 'Loading...' : 'Select city'} />
+                          <SelectValue
+                            placeholder={
+                              !provinceId || provinceId === 0
+                                ? 'Select province first'
+                                : citiesLoading
+                                  ? 'Loading...'
+                                  : 'Select city'
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

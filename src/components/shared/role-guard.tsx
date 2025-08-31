@@ -39,7 +39,7 @@ const RoleGuard = ({
 
   const containerClass = fullScreen ? 'min-h-screen' : 'h-full w-full'
 
-  if (isLoading || isAuthenticated === undefined) {
+  if (isLoading || isAuthenticated === undefined || user === undefined) {
     return (
       <div className={`flex ${containerClass} items-center justify-center`}>
         <div className='flex flex-col items-center space-y-4'>
