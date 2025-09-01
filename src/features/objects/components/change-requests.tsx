@@ -28,7 +28,7 @@ export const ChangeRequests = () => {
               const idInput = (document.getElementById('cr-id') as HTMLInputElement)?.value
               const crId = Number(idInput)
               if (!crId) return
-              review.mutate({ id: crId, payload: { status: 'APPROVED' } })
+              review.mutate({ id: crId, payload: { status: 'REVIEWED' } })
             }}
           >
             Approve

@@ -43,7 +43,7 @@ const ChangeRequestList = () => {
   })
 
   const { changeRequests, changeRequestsLoading, changeRequestsError, refetch, pagination } = useChangeRequests(filters)
-  const totalPages = Math.ceil(((pagination?.total as number) || 0) / ((filters.take as number) || 10))
+  const totalPages = Math.ceil((pagination?.total || 0) / (filters.take || 10))
 
   const handleStatusFilter = (status: RequestStatus | undefined) => {
     setFilters(prev => ({

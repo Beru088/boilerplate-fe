@@ -10,12 +10,15 @@ export interface ICreateUserData {
   name: string
   roleId: number
   password?: string
+  userAbility?: { canDownload?: boolean }
 }
 
 export interface IUpdateUserData {
   email?: string
   name?: string
   roleId?: number
+  password?: string
+  userAbility?: { canDownload?: boolean }
 }
 
 export const useCreateUser = () => {

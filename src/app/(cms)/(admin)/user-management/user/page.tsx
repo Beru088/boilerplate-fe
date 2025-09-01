@@ -59,7 +59,7 @@ const UsersPage = () => {
           <h1 className='text-3xl font-bold'>Users</h1>
           <p className='text-muted-foreground'>Manage regular user accounts and access permissions.</p>
         </div>
-        <CreateUserForm onSuccess={handleSuccess} />
+        <CreateUserForm onSuccess={handleSuccess} allowedRoleNames={['viewer']} />
       </div>
 
       <div className='flex items-center gap-4'>

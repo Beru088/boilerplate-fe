@@ -29,7 +29,12 @@ const breadcrumbConfig: Record<string, { label: string; parent?: string }> = {
   '/master/materials': { label: 'Material', parent: '/master' },
   '/master/tags': { label: 'Tags', parent: '/master' },
   '/master/locations': { label: 'Locations', parent: '/master' },
-  '/master/sub-locations': { label: 'Sub-Locations', parent: '/master' }
+  '/master/sub-locations': { label: 'Sub-Locations', parent: '/master' },
+
+  // Logs
+  '/logs': { label: 'Historia Logs' },
+  '/logs/activity': { label: 'Activity Logs', parent: '/logs' },
+  '/logs/users-activity': { label: 'User Activity', parent: '/logs' }
 }
 
 export function useBreadcrumbs(): BreadcrumbItem[] {

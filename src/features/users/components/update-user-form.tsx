@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -26,7 +26,8 @@ import { toast } from 'sonner'
 const updateUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  roleId: z.number().min(1, 'Please select a role')
+  roleId: z.number().min(1, 'Please select a role'),
+  userAbility: z.object({ canDownload: z.boolean().optional() }).optional()
 })
 
 type UpdateUserFormData = z.infer<typeof updateUserSchema>
@@ -52,24 +53,37 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
     defaultValues: {
       name: user.name,
       email: user.email,
-      roleId: user.role.id
+      roleId: user.role.id,
+      userAbility: { canDownload: user.userAbility?.canDownload || false }
     }
   })
 
-  // Update form values when user prop changes
   useEffect(() => {
     form.reset({
       name: user.name,
       email: user.email,
-      roleId: user.role.id
+      roleId: user.role.id,
+      userAbility: { canDownload: user.userAbility?.canDownload || false }
     })
   }, [user, form])
+
+  const isViewerRole = useMemo(() => {
+    const roleId = form.getValues('roleId')
+    const role = roles.find(r => r.id === roleId)
+
+    return role?.name === 'viewer'
+  }, [form, roles])
 
   const onSubmit = async (data: UpdateUserFormData) => {
     try {
       await updateUserMutation.mutateAsync({
         id: user.id,
-        userData: data
+        userData: {
+          name: data.name,
+          email: data.email,
+          roleId: data.roleId,
+          userAbility: isViewerRole ? data.userAbility : undefined
+        }
       })
       toast.success('User updated successfully')
       setIsOpen(false)
@@ -84,7 +98,8 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
       form.reset({
         name: user.name,
         email: user.email,
-        roleId: user.role.id
+        roleId: user.role.id,
+        userAbility: { canDownload: user.userAbility?.canDownload || false }
       })
     }
     setIsOpen(newOpen)
@@ -159,6 +174,33 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
                 </FormItem>
               )}
             />
+
+            {isViewerRole && (
+              <FormField
+                control={form.control}
+                name='userAbility'
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Viewer Abilities</FormLabel>
+                    <div className='flex items-center gap-2'>
+                      <input
+                        id='canDownload'
+                        type='checkbox'
+                        checked={!!form.getValues('userAbility')?.canDownload}
+                        onChange={e =>
+                          form.setValue('userAbility', {
+                            ...(form.getValues('userAbility') || {}),
+                            canDownload: e.target.checked
+                          })
+                        }
+                      />
+                      <label htmlFor='canDownload'>Can download media</label>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <DialogFooter>
               <Button
                 type='button'

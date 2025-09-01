@@ -65,14 +65,21 @@ export const ShowMedia = ({
       }))
       setPositionArray(newPositionArray)
     } else if (mode === 'create') {
-      const newFilePositions = files.map((_, index) => ({
-        id: null,
-        position: index,
-        isCover: false
-      }))
-      setPositionArray(newFilePositions)
+      // Only initialize if positionArray is empty or if the number of files changed
+      if (positionArray.length === 0 || positionArray.length !== files.length) {
+        const newFilePositions = files.map((_, index) => {
+          const existingPosition = positionArray.find(pos => pos.position === index)
+
+          return {
+            id: null,
+            position: index,
+            isCover: existingPosition?.isCover || false
+          }
+        })
+        setPositionArray(newFilePositions)
+      }
     }
-  }, [existingMedia, files, mode])
+  }, [existingMedia, files.length, mode, positionArray.length])
 
   const mediaItems = useMemo(() => {
     if (mode === 'create') {
@@ -182,6 +189,10 @@ export const ShowMedia = ({
       })
 
       setPositionArray(newPositionArray)
+
+      if (onPositionChange) {
+        onPositionChange(newPositionArray)
+      }
     } else {
       const existingMediaPositions = newItems
         .filter(item => !item.isNew && item.id != null)
@@ -257,12 +268,22 @@ export const ShowMedia = ({
       const newFiles = files.filter(f => f !== item.file)
       onChange(newFiles)
       if (mode === 'create') {
-        const newFilePositions = newFiles.map((_, index) => ({
-          id: null,
-          position: index,
-          isCover: positionArray.find(p => p.position === item.position)?.isCover && index === 0 ? true : false
-        }))
+        // Preserve cover settings for remaining files, adjusting positions
+        const newFilePositions = newFiles.map((_, index) => {
+          const oldPosition = index >= item.position! ? index + 1 : index
+          const existingPosition = positionArray.find(p => p.position === oldPosition)
+
+          return {
+            id: null,
+            position: index,
+            isCover: existingPosition?.isCover || false
+          }
+        })
         setPositionArray(newFilePositions)
+
+        if (onPositionChange) {
+          onPositionChange(newFilePositions)
+        }
       }
     } else if (item.id && onDeleteMedia) {
       onDeleteMedia([item.id])

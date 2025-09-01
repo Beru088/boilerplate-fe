@@ -54,7 +54,7 @@ export default function ContributorUsersPage() {
           <h1 className='text-3xl font-bold'>Contributor Users</h1>
           <p className='text-muted-foreground'>Manage contributor accounts.</p>
         </div>
-        <CreateUserForm onSuccess={handleSuccess} />
+        <CreateUserForm onSuccess={handleSuccess} allowedRoleNames={['contributor']} />
       </div>
 
       <div className='flex items-center gap-4'>

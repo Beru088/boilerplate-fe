@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -21,24 +21,51 @@ import { Plus, Loader2 } from 'lucide-react'
 import { useCreateUser } from '@/features/users/api/user-mutation'
 import { useRoles } from '@/features/master-data/api/roles'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/auth'
 
 const createUserSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   roleId: z.number().min(1, 'Please select a role'),
-  password: z.string().optional()
+  password: z.string().optional(),
+  userAbility: z.object({ canDownload: z.boolean().optional() }).optional()
 })
 
 type CreateUserFormData = z.infer<typeof createUserSchema>
 
 interface CreateUserFormProps {
   onSuccess?: () => void
+  allowedRoleNames?: string[]
 }
 
-const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
+const CreateUserForm = ({ onSuccess, allowedRoleNames }: CreateUserFormProps) => {
   const [open, setOpen] = useState(false)
   const createUserMutation = useCreateUser()
   const { roles, rolesLoading } = useRoles()
+  const { user } = useAuth()
+
+  const currentUserRole = user?.role?.name || ''
+
+  const filteredRoles = useMemo(() => {
+    let list = roles
+
+    if (allowedRoleNames && allowedRoleNames.length > 0) {
+      list = list.filter(r => allowedRoleNames.includes(r.name))
+    }
+
+    if (currentUserRole !== 'superadmin') {
+      list = list.filter(r => r.name !== 'superadmin')
+    }
+
+    return list
+  }, [roles, allowedRoleNames, currentUserRole])
+
+  const singleRoleName = filteredRoles.length === 1 ? filteredRoles[0].name : undefined
+  const formattedSingleRole = useMemo(() => {
+    if (!singleRoleName) return ''
+
+    return singleRoleName.charAt(0).toUpperCase() + singleRoleName.slice(1)
+  }, [singleRoleName])
 
   const form = useForm<CreateUserFormData>({
     resolver: zodResolver(createUserSchema),
@@ -46,13 +73,33 @@ const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
       name: '',
       email: '',
       roleId: 0,
-      password: ''
+      password: '',
+      userAbility: { canDownload: false }
     }
   })
 
+  useEffect(() => {
+    if (!rolesLoading && filteredRoles.length === 1) {
+      form.setValue('roleId', filteredRoles[0].id)
+    }
+  }, [rolesLoading, filteredRoles, form])
+
+  const isViewerRole = useMemo(() => {
+    const roleId = form.getValues('roleId')
+    const role = filteredRoles.find(r => r.id === roleId)
+
+    return (role?.name || singleRoleName) === 'viewer'
+  }, [form, filteredRoles, singleRoleName])
+
   const onSubmit = async (data: CreateUserFormData) => {
     try {
-      await createUserMutation.mutateAsync(data)
+      await createUserMutation.mutateAsync({
+        email: data.email,
+        name: data.name,
+        roleId: data.roleId,
+        password: data.password,
+        userAbility: isViewerRole ? data.userAbility : undefined
+      })
       toast.success('User created successfully')
       form.reset()
       setOpen(false)
@@ -79,8 +126,12 @@ const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Create New User</DialogTitle>
-          <DialogDescription>Add a new user to the system. Fill in the required information below.</DialogDescription>
+          <DialogTitle> {`Create New ${formattedSingleRole || 'User'}`} </DialogTitle>
+          <DialogDescription>
+            {formattedSingleRole
+              ? `You are creating a ${formattedSingleRole} account. Fill in the required information below.`
+              : 'Add a new user to the system. Fill in the required information below.'}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
@@ -110,34 +161,64 @@ const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name='roleId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={value => field.onChange(parseInt(value))}
-                    defaultValue={field.value ? field.value.toString() : undefined}
-                    disabled={rolesLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={rolesLoading ? 'Loading roles...' : 'Select a role'} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {roles.map(role => (
-                        <SelectItem key={role.id} value={role.id.toString()}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {filteredRoles.length > 1 && (
+              <FormField
+                control={form.control}
+                name='roleId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={value => field.onChange(parseInt(value))}
+                      defaultValue={field.value ? field.value.toString() : undefined}
+                      disabled={rolesLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={rolesLoading ? 'Loading roles...' : 'Select a role'} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {filteredRoles.map(role => (
+                          <SelectItem key={role.id} value={role.id.toString()}>
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {isViewerRole && (
+              <FormField
+                control={form.control}
+                name='userAbility'
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Viewer Abilities</FormLabel>
+                    <div className='flex items-center gap-2'>
+                      <input
+                        id='canDownload'
+                        type='checkbox'
+                        checked={!!form.getValues('userAbility')?.canDownload}
+                        onChange={e =>
+                          form.setValue('userAbility', {
+                            ...(form.getValues('userAbility') || {}),
+                            canDownload: e.target.checked
+                          })
+                        }
+                      />
+                      <label htmlFor='canDownload'>Can download media</label>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <FormField
               control={form.control}
               name='password'
@@ -160,7 +241,10 @@ const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
               >
                 Cancel
               </Button>
-              <Button type='submit' disabled={createUserMutation.isPending || rolesLoading}>
+              <Button
+                type='submit'
+                disabled={createUserMutation.isPending || rolesLoading || filteredRoles.length === 0}
+              >
                 {createUserMutation.isPending ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />

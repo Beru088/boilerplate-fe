@@ -62,7 +62,7 @@ export const useChangeRequest = (id?: number) => {
 }
 
 export const reviewChangeRequest = async (id: number, review: IChangeReviewInput) => {
-  const response = await service.put(`/objects/change-request/${id}/review`, review)
+  const response = await service.put(`/change-requests/${id}/review`, review)
 
   return response.data
 }

@@ -95,7 +95,7 @@ export const CreateObjectForm = () => {
     if (files.length > 0) {
       // Find if any new file is set as cover in the positionArray
       // Look for null IDs (new files) that are marked as cover
-      const coverPosition = positionArray.find(pos => pos.id === null && pos.isCover)
+      const coverPosition = positionArray.find((pos: any) => pos.id === null && pos.isCover)
       if (coverPosition) {
         // Use the position directly as the cover index
         finalCoverIndex = coverPosition.position

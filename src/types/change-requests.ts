@@ -39,7 +39,7 @@ export interface IChangeRequestInput {
 }
 
 export interface IChangeReviewInput {
-  status: 'APPROVED' | 'REJECTED' | 'CANCELED'
+  status: 'REVIEWED' | 'APPROVED' | 'REJECTED' | 'CANCELED'
   reasonRejected?: string
   submit?: boolean
 }

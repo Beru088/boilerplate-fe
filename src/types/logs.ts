@@ -34,8 +34,10 @@ export interface IVisitLog {
   userId: number
   ipAddress: string
   visitedAt: Date
+  activityLogId: number
   object?: IObject
   user?: IUser
+  activityLog?: IActivityLog
 }
 
 export interface ILogQuery extends IPaginationQuery {
@@ -71,5 +73,4 @@ export interface IVisitLogQuery extends IPaginationQuery {
 export interface IVisitLogCreate {
   objectId: number
   userId: number
-  ipAddress: string
 }

@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
           <h1 className='text-3xl font-bold'>Admin Users</h1>
           <p className='text-muted-foreground'>Manage administrator accounts.</p>
         </div>
-        <CreateUserForm onSuccess={handleSuccess} />
+        <CreateUserForm onSuccess={handleSuccess} allowedRoleNames={['superadmin', 'admin']} />
       </div>
 
       <div className='flex items-center gap-4'>

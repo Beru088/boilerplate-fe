@@ -218,7 +218,7 @@ export const useRemoveTag = () => {
 export const useReviewChangeRequest = () => {
   return useMutation({
     mutationFn: async ({ id, payload }: { id: number; payload: IChangeReviewInput }): Promise<IApiResponse<any>> => {
-      const response = await service.put(`/objects/change-request/${id}/review`, payload)
+      const response = await service.put(`/change-requests/${id}/review`, payload)
 
       return response.data
     }
@@ -228,7 +228,7 @@ export const useReviewChangeRequest = () => {
 export const useCancelChangeRequest = () => {
   return useMutation({
     mutationFn: async (id: number): Promise<IApiResponse<any>> => {
-      const response = await service.del(`/objects/change-request/${id}`)
+      const response = await service.del(`/change-requests/${id}`)
 
       return response.data
     }

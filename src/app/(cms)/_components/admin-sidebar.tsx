@@ -59,9 +59,14 @@ const data = {
       icon: BookOpen,
       items: [
         {
-          title: 'Activity Logs',
-          url: '/logs/activity',
+          title: 'Archive Activity',
+          url: '/logs/archive-data',
           icon: FileChartColumn
+        },
+        {
+          title: 'User Activity',
+          url: '/logs/users-activity',
+          icon: Users
         }
       ]
     }

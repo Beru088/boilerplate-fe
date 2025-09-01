@@ -261,7 +261,7 @@ export const ChangeRequestViewer: React.FC<ChangeRequestViewerProps> = ({ change
   const reviewMutation = useReviewChangeRequest()
 
   const handleSubmit = () => {
-    reviewMutation.mutate({ id: changeRequest.id, review: { status: 'APPROVED', submit: true } })
+    reviewMutation.mutate({ id: changeRequest.id, review: { status: 'APPROVED' } })
   }
 
   const handleReject = () => {
@@ -449,19 +449,19 @@ export const ChangeRequestViewer: React.FC<ChangeRequestViewerProps> = ({ change
                 </>
               ) : (
                 <>
-                  {/* Approve button */}
-                  <Button
-                    variant='secondary'
-                    onClick={() =>
-                      reviewMutation.mutate({
-                        id: changeRequest.id,
-                        review: { status: 'APPROVED' }
-                      })
-                    }
-                    disabled={isLoading}
-                  >
-                    Approve
-                  </Button>
+                                     {/* Approve button */}
+                   <Button
+                     variant='secondary'
+                     onClick={() =>
+                       reviewMutation.mutate({
+                         id: changeRequest.id,
+                         review: { status: 'REVIEWED' }
+                       })
+                     }
+                     disabled={isLoading}
+                   >
+                     Approve
+                   </Button>
 
                   {/* Reject button + reason input */}
                   {!showRejectForm ? (

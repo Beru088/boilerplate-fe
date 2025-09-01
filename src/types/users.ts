@@ -11,6 +11,7 @@ export interface IUser {
   updatedAt: Date
   deletedAt?: Date | null
   role: IRole
+  userAbility?: { canDownload: boolean }
 }
 
 export interface IUserQuery extends IPaginationQuery {
@@ -24,6 +25,7 @@ export interface IUserCreate {
   email: string
   password?: string
   roleId: number
+  userAbility?: { canDownload?: boolean }
 }
 
 export interface IUserUpdate {
@@ -31,4 +33,5 @@ export interface IUserUpdate {
   email?: string
   password?: string
   roleId?: number
+  userAbility?: { canDownload?: boolean }
 }
