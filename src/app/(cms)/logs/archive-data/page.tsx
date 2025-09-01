@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Activity, MoreHorizontal, AlertCircle, RefreshCw, Eye } from 'lucide-react'
+import { Activity, MoreHorizontal, AlertCircle, RefreshCw, Eye, Filter } from 'lucide-react'
 import { useActivityLogs } from '@/features/logs/api/activity'
 import { Skeleton } from '@/components/ui/skeleton'
 import { IActivityLogQuery } from '@/types/logs'
@@ -12,11 +12,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import ListPagination from '@/components/shared/pagination'
 import { useRouter } from 'next/navigation'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const ArchiveDataLogsPage = () => {
   const router = useRouter()
   const [logOptions, setLogOptions] = useState<IActivityLogQuery>({
-    targetType: '',
+    targetType: 'object',
     action: '',
     skip: 0,
     take: 10
@@ -25,7 +26,7 @@ const ArchiveDataLogsPage = () => {
   const { activityLogs, activityLogsLoading, activityLogsFetched, activityLogsError, refetch, pagination } =
     useActivityLogs(logOptions)
 
-  const archiveDataLogs = activityLogs.filter(log => log.action !== 'VISIT')
+  const archiveDataLogs = activityLogs
   const totalPages = pagination?.totalPages ?? 1
 
   const handleRetry = () => {
@@ -33,15 +34,16 @@ const ArchiveDataLogsPage = () => {
   }
 
   const getActionColor = (action: string) => {
-    switch (action?.toUpperCase()) {
-      case 'CREATE':
+    switch (action?.toLowerCase()) {
+      case 'create_object':
         return 'bg-green-100 text-green-800'
-      case 'UPDATE':
+      case 'update_object':
         return 'bg-blue-100 text-blue-800'
-      case 'DELETE':
+      case 'delete_object':
         return 'bg-red-100 text-red-800'
-      case 'REVERT':
+      case 'restore_object':
         return 'bg-orange-100 text-orange-800'
+
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -64,7 +66,44 @@ const ArchiveDataLogsPage = () => {
             <Activity className='h-5 w-5' />
             Archive Data Activity
           </CardTitle>
-          <CardDescription>View all changes made to archive objects and data</CardDescription>
+          <CardDescription>
+            View all object changes: creation, updates, deletions, and change request approvals
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className='mb-4 flex items-center gap-4'>
+            <div className='flex items-center gap-2'>
+              <Filter className='text-muted-foreground h-4 w-4' />
+              <span className='text-sm font-medium'>Filter by Action:</span>
+            </div>
+            <Select
+              value={logOptions.action || ''}
+              onValueChange={value => setLogOptions(prev => ({ ...prev, action: value, skip: 0 }))}
+            >
+              <SelectTrigger className='w-48'>
+                <SelectValue placeholder='All Actions' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=''>All Actions</SelectItem>
+                <SelectItem value='create_object'>Create Object</SelectItem>
+                <SelectItem value='update_object'>Update Object</SelectItem>
+                <SelectItem value='delete_object'>Delete Object</SelectItem>
+                <SelectItem value='restore_object'>Restore Object</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className='flex items-center gap-2'>
+            <Activity className='h-5 w-5' />
+            Archive Data Logs
+          </CardTitle>
+          <CardDescription>
+            View all object changes: creation, updates, deletions, and change request approvals
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {activityLogsLoading ? (
@@ -105,7 +144,9 @@ const ArchiveDataLogsPage = () => {
             <div className='py-8 text-center'>
               <Activity className='text-muted-foreground mx-auto mb-4 h-12 w-12' />
               <p className='text-muted-foreground'>No archive data logs found</p>
-              <p className='text-muted-foreground mt-2 text-sm'>Archive data changes will appear here</p>
+              <p className='text-muted-foreground mt-2 text-sm'>
+                Object changes and change request approvals will appear here
+              </p>
             </div>
           ) : (
             <>
