@@ -23,11 +23,14 @@ axios.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      localStorage.removeItem(authConfig.storageTokenKeyName)
-      localStorage.removeItem('user')
+      const currentPath = window.location.pathname
+      if (currentPath !== '/' && !currentPath.includes('/auth/')) {
+        localStorage.removeItem(authConfig.storageTokenKeyName)
+        localStorage.removeItem('user')
 
-      if (typeof window !== 'undefined') {
-        window.location.href = '/'
+        if (typeof window !== 'undefined') {
+          window.location.href = '/'
+        }
       }
     }
 

@@ -1,8 +1,7 @@
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000/api'
+
 export const AppConfig = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
-  serverUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000',
-  mediaUrl: process.env.NEXT_PUBLIC_BASE_URL
-    ? `${process.env.NEXT_PUBLIC_BASE_URL}/media-storage`
-    : 'http://localhost:8000/media-storage',
+  baseUrl,
+  mediaUrl: `${baseUrl}/media-storage`,
   package: 'web-client'
 }

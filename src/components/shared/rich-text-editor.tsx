@@ -1,11 +1,22 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
 import { TextStyle } from '@tiptap/extension-text-style'
+import Link from '@tiptap/extension-link'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 import {
   Bold,
   Italic,
@@ -20,7 +31,8 @@ import {
   Code,
   Quote,
   Minus,
-  Strikethrough
+  Strikethrough,
+  Link as LinkIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -34,6 +46,10 @@ interface RichTextEditorProps {
 }
 
 const RichTextEditor = ({ value = '', onChange, className, disabled = false }: RichTextEditorProps) => {
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('')
+  const [linkText, setLinkText] = useState('')
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -43,6 +59,12 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
       TextAlign.configure({
         types: ['paragraph'],
         alignments: ['left', 'center', 'right']
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-blue-600 underline hover:text-blue-800'
+        }
       })
     ],
     content: value,
@@ -58,6 +80,34 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
       editor.commands.setContent(value)
     }
   }, [editor, value])
+
+  const openLinkDialog = () => {
+    if (!editor) return
+    const { from, to } = editor.state.selection
+    const selectedText = editor.state.doc.textBetween(from, to, ' ')
+    setLinkText(selectedText)
+    setLinkUrl('')
+    setIsLinkDialogOpen(true)
+  }
+
+  const handleAddLink = () => {
+    if (!editor || !linkUrl.trim()) return
+
+    if (linkText.trim()) {
+      editor.chain().focus().insertContent(`<a href="${linkUrl}">${linkText}</a>`).run()
+    } else {
+      editor.chain().focus().setLink({ href: linkUrl }).run()
+    }
+    setIsLinkDialogOpen(false)
+    setLinkUrl('')
+    setLinkText('')
+  }
+
+  const handleCancelLink = () => {
+    setIsLinkDialogOpen(false)
+    setLinkUrl('')
+    setLinkText('')
+  }
 
   if (!editor) {
     return null
@@ -157,6 +207,9 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
           >
             <Code className='h-4 w-4' />
           </ToolbarButton>
+          <ToolbarButton onClick={openLinkDialog} isActive={editor.isActive('link')} tooltip='Add Link'>
+            <LinkIcon className='h-4 w-4' />
+          </ToolbarButton>
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editor.isActive('bulletList')}
@@ -207,6 +260,50 @@ const RichTextEditor = ({ value = '', onChange, className, disabled = false }: R
       </TooltipProvider>
 
       <EditorContent editor={editor} className='p-3 focus:outline-none' />
+
+      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+        <DialogContent className='sm:max-w-[425px]'>
+          <DialogHeader>
+            <DialogTitle>Add Link</DialogTitle>
+            <DialogDescription>Enter the URL and optional link text for your link.</DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='link-url' className='text-right'>
+                URL
+              </Label>
+              <Input
+                id='link-url'
+                value={linkUrl}
+                onChange={e => setLinkUrl(e.target.value)}
+                placeholder='https://example.com'
+                className='col-span-3'
+                autoFocus
+              />
+            </div>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='link-text' className='text-right'>
+                Text
+              </Label>
+              <Input
+                id='link-text'
+                value={linkText}
+                onChange={e => setLinkText(e.target.value)}
+                placeholder='Link text (optional)'
+                className='col-span-3'
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type='button' variant='outline' onClick={handleCancelLink}>
+              Cancel
+            </Button>
+            <Button type='button' onClick={handleAddLink} disabled={!linkUrl.trim()}>
+              Add Link
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

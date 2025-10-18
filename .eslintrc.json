@@ -14,7 +14,7 @@
 
     "jsx-a11y/alt-text": [0],
     "lines-around-comment": "off",
-    "newline-before-return": "error",
+    "newline-before-return": "off",
     "import/newline-after-import": [
       "error",
       {

@@ -1,6 +1,7 @@
 export interface IPaginationQuery {
   skip?: number
   take?: number
+  sort?: 'newest' | 'oldest'
 }
 
 export interface IPaginationMetadata {
@@ -69,27 +70,7 @@ export interface IFormData<T> {
   media?: File[]
 }
 
-export enum ObjectStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive'
-}
-
 export enum UserStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive'
-}
-
-export enum CategoryStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive'
-}
-
-export enum MaterialStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive'
-}
-
-export enum TagStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive'
 }

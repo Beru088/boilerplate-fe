@@ -5,19 +5,20 @@ import { Figtree } from 'next/font/google'
 
 const figtree = Figtree({
   subsets: ['latin'],
-  display: 'swap'
+  display: 'swap',
+  variable: '--font-figtree'
 })
 
 export const metadata: Metadata = {
   icons: '/images/favicon.ico',
-  title: 'Historia',
-  description: 'Historia is a platform for managing and exploring Samudera Asset Archive'
+  title: 'Samudera Cockpit',
+  description: 'Cockpit is a platform for managing and exploring Samudera Data Dashboard'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={figtree.className}>
+      <body className={`${figtree.variable} font-sans`}>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

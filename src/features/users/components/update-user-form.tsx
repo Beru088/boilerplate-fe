@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -16,18 +16,18 @@ import {
 } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Edit, Loader2 } from 'lucide-react'
 import { useUpdateUser } from '@/features/users/api/user-mutation'
-import { useRoles } from '@/features/master-data/api/roles'
 import { IUser } from '@/types/users'
 import { toast } from 'sonner'
+import { useAuth } from '@/lib/auth'
 
 const updateUserSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  fullname: z.string().min(2, 'Full name must be at least 2 characters'),
+  username: z.string().min(2, 'Username must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  roleId: z.number().min(1, 'Please select a role'),
-  userAbility: z.object({ canDownload: z.boolean().optional() }).optional()
+  phone: z.string().optional(),
+  isAdmin: z.boolean()
 })
 
 type UpdateUserFormData = z.infer<typeof updateUserSchema>
@@ -42,7 +42,9 @@ interface UpdateUserFormProps {
 const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormProps) => {
   const [internalOpen, setInternalOpen] = useState(false)
   const updateUserMutation = useUpdateUser()
-  const { roles, rolesLoading } = useRoles()
+  const { user: currentUser } = useAuth()
+
+  const currentUserIsAdmin = currentUser?.isAdmin || false
 
   const isControlled = open !== undefined && onOpenChange !== undefined
   const isOpen = isControlled ? open : internalOpen
@@ -51,38 +53,34 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
   const form = useForm<UpdateUserFormData>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      name: user.name,
+      fullname: user.fullname,
+      username: user.username,
       email: user.email,
-      roleId: user.role.id,
-      userAbility: { canDownload: user.userAbility?.canDownload || false }
+      phone: user.phone || '',
+      isAdmin: user.isAdmin
     }
   })
 
   useEffect(() => {
     form.reset({
-      name: user.name,
+      fullname: user.fullname,
+      username: user.username,
       email: user.email,
-      roleId: user.role.id,
-      userAbility: { canDownload: user.userAbility?.canDownload || false }
+      phone: user.phone || '',
+      isAdmin: user.isAdmin
     })
   }, [user, form])
-
-  const isViewerRole = useMemo(() => {
-    const roleId = form.getValues('roleId')
-    const role = roles.find(r => r.id === roleId)
-
-    return role?.name === 'viewer'
-  }, [form, roles])
 
   const onSubmit = async (data: UpdateUserFormData) => {
     try {
       await updateUserMutation.mutateAsync({
         id: user.id,
         userData: {
-          name: data.name,
+          fullname: data.fullname,
+          username: data.username,
           email: data.email,
-          roleId: data.roleId,
-          userAbility: isViewerRole ? data.userAbility : undefined
+          phone: data.phone,
+          isAdmin: data.isAdmin
         }
       })
       toast.success('User updated successfully')
@@ -96,10 +94,11 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       form.reset({
-        name: user.name,
+        fullname: user.fullname,
+        username: user.username,
         email: user.email,
-        roleId: user.role.id,
-        userAbility: { canDownload: user.userAbility?.canDownload || false }
+        phone: user.phone || '',
+        isAdmin: user.isAdmin
       })
     }
     setIsOpen(newOpen)
@@ -122,12 +121,25 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <FormField
               control={form.control}
-              name='name'
+              name='fullname'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter user name' {...field} />
+                    <Input placeholder='Enter full name' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='username'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Enter username' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,59 +160,35 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
             />
             <FormField
               control={form.control}
-              name='roleId'
+              name='phone'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    onValueChange={value => field.onChange(parseInt(value))}
-                    defaultValue={field.value ? field.value.toString() : undefined}
-                    disabled={rolesLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={rolesLoading ? 'Loading roles...' : 'Select a role'} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {roles.map(role => (
-                        <SelectItem key={role.id} value={role.id.toString()}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Phone (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Enter phone number' {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {isViewerRole && (
+            {currentUserIsAdmin && (
               <FormField
                 control={form.control}
-                name='userAbility'
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Viewer Abilities</FormLabel>
-                    <div className='flex items-center gap-2'>
-                      <input
-                        id='canDownload'
-                        type='checkbox'
-                        checked={!!form.getValues('userAbility')?.canDownload}
-                        onChange={e =>
-                          form.setValue('userAbility', {
-                            ...(form.getValues('userAbility') || {}),
-                            canDownload: e.target.checked
-                          })
-                        }
-                      />
-                      <label htmlFor='canDownload'>Can download media</label>
+                name='isAdmin'
+                render={({ field }) => (
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
+                    <div className='space-y-0.5'>
+                      <FormLabel className='text-base'>Admin Access</FormLabel>
+                      <div className='text-muted-foreground text-sm'>Grant administrative privileges to this user</div>
                     </div>
-                    <FormMessage />
+                    <FormControl>
+                      <input type='checkbox' checked={field.value} onChange={field.onChange} className='h-4 w-4' />
+                    </FormControl>
                   </FormItem>
                 )}
               />
             )}
+
             <DialogFooter>
               <Button
                 type='button'
@@ -210,7 +198,7 @@ const UpdateUserForm = ({ user, onSuccess, open, onOpenChange }: UpdateUserFormP
               >
                 Cancel
               </Button>
-              <Button type='submit' disabled={updateUserMutation.isPending || rolesLoading}>
+              <Button type='submit' disabled={updateUserMutation.isPending}>
                 {updateUserMutation.isPending ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />

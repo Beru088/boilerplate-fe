@@ -17,24 +17,7 @@ const breadcrumbConfig: Record<string, { label: string; parent?: string }> = {
   '/user-management/contributor': { label: 'Contributor Users', parent: '/user-management' },
 
   // Archive Management
-  '/dashboard': { label: 'Historia Dashboard' },
-  '/object-archive': { label: 'Objects Archive' },
-  '/object-archive/[id]': { label: 'Object Detail', parent: '/object-archive' },
-  '/object-archive/create': { label: 'Create Object', parent: '/object-archive' },
-  '/object-archive/[id]/edit': { label: 'Edit Object', parent: '/object-archive' },
-
-  // Master Data
-  '/master': { label: 'Master Data' },
-  '/master/categories': { label: 'Category', parent: '/master' },
-  '/master/materials': { label: 'Material', parent: '/master' },
-  '/master/tags': { label: 'Tags', parent: '/master' },
-  '/master/locations': { label: 'Locations', parent: '/master' },
-  '/master/sub-locations': { label: 'Sub-Locations', parent: '/master' },
-
-  // Logs
-  '/logs': { label: 'Historia Logs' },
-  '/logs/activity': { label: 'Activity Logs', parent: '/logs' },
-  '/logs/users-activity': { label: 'User Activity', parent: '/logs' }
+  '/dashboard': { label: 'Cockpit Dashboard' }
 }
 
 export function useBreadcrumbs(): BreadcrumbItem[] {

@@ -1,37 +1,49 @@
 import type { IPaginationQuery } from './index'
-import type { IRole } from './roles'
 
 export interface IUser {
   id: number
-  name: string
+  fullname: string
+  username: string
   email: string
+  phone?: string
   password?: string
-  roleId: number
+  isAdmin: boolean
+  groups?: Array<{
+    id: number
+    group: {
+      id: number
+      name: string
+      code: string
+      description?: string
+      permissions: string[]
+      isActive: boolean
+    }
+  }>
+  deletedAt?: Date | null
   createdAt: Date
   updatedAt: Date
-  deletedAt?: Date | null
-  role: IRole
-  userAbility?: { canDownload: boolean }
 }
 
 export interface IUserQuery extends IPaginationQuery {
   search?: string
-  role?: string
+  isAdmin?: boolean
   status?: string
 }
 
 export interface IUserCreate {
-  name: string
+  fullname: string
+  username: string
   email: string
-  password?: string
-  roleId: number
-  userAbility?: { canDownload?: boolean }
+  phone?: string
+  password: string
+  isAdmin?: boolean
 }
 
 export interface IUserUpdate {
-  name?: string
+  fullname?: string
+  username?: string
   email?: string
+  phone?: string
   password?: string
-  roleId?: number
-  userAbility?: { canDownload?: boolean }
+  isAdmin?: boolean
 }

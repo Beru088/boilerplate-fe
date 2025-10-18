@@ -1,4 +1,4 @@
-# Historia
+# Cockpit
 
 A modern web application for managing and exploring Samudera Asset Archive, built with Next.js 15 and React 19.
 
@@ -17,7 +17,7 @@ A modern web application for managing and exploring Samudera Asset Archive, buil
 
    ```bash
    git clone <repository-url>
-   cd historia-fe
+   cd cockpit-fe
    ```
 
 2. **Install dependencies**
@@ -107,4 +107,4 @@ For support, create an issue in the repository.
 
 ---
 
-Built with ❤️ for Samudera Historia
+Built with ❤️ for Cockpit Analytics Dashboard

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import authConfig from '@/configs/auth'
 import { ILoginCredentials } from '@/types'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 export const useAuth = () => {
   const queryClient = useQueryClient()
@@ -18,7 +19,12 @@ export const useAuth = () => {
 
   const authApi = {
     login: async (credentials: ILoginCredentials) => {
-      const response = await service.post('/auth/login', credentials)
+      const payload = {
+        email: credentials.email,
+        password: credentials.password
+      }
+
+      const response = await service.post('/auth/login', payload)
 
       return response.data
     },
@@ -56,14 +62,17 @@ export const useAuth = () => {
       queryClient.removeQueries({ queryKey: ['user'] })
       queryClient.setQueryData(['me'], { data: user })
 
-      if (user.role.name === 'viewer') {
-        router.push('/explore')
-      } else {
-        router.push('/dashboard')
-      }
+      toast.success('Login successful', {
+        description: `Welcome back, ${user.fullname}!`
+      })
+
+      router.push('/dashboard')
     },
-    onError: error => {
-      console.error('Login failed:', error)
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Login failed. Please check your credentials.'
+      toast.error('Login failed', {
+        description: message
+      })
     }
   })
 
@@ -81,14 +90,17 @@ export const useAuth = () => {
       queryClient.removeQueries({ queryKey: ['user'] })
       queryClient.setQueryData(['me'], { data: user })
 
-      if (user.role.name === 'viewer') {
-        router.push('/explore')
-      } else {
-        router.push('/dashboard')
-      }
+      toast.success('Authentication successful', {
+        description: `Welcome back, ${user.fullname}!`
+      })
+
+      router.push('/dashboard')
     },
-    onError: error => {
-      console.error('Token login failed:', error)
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Authentication failed. Please try logging in again.'
+      toast.error('Authentication failed', {
+        description: message
+      })
     }
   })
 
@@ -100,10 +112,19 @@ export const useAuth = () => {
         localStorage.removeItem(authConfig.storageTokenKeyName)
       }
       queryClient.clear()
+
+      toast.success('Logged out successfully', {
+        description: 'You have been signed out of your account'
+      })
+
       router.push('/')
     },
-    onError: error => {
-      console.error('Logout failed:', error)
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Logout failed'
+      toast.error('Logout failed', {
+        description: message
+      })
+
       if (typeof window !== 'undefined') {
         localStorage.removeItem('user')
         localStorage.removeItem(authConfig.storageTokenKeyName)

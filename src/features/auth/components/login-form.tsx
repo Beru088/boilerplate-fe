@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,7 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
     email: '',
     password: ''
   })
+  const [error, setError] = useState<string>('')
 
   const { login, isLoginLoading } = useAuth()
 
@@ -29,7 +30,19 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    login(formData)
+    setError('')
+
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields')
+      return
+    }
+
+    try {
+      login(formData)
+    } catch (err) {
+      setError('Login failed. Please try again.')
+      console.error('Login error:', err)
+    }
   }
 
   const handleGoogleLogin = () => {
@@ -38,29 +51,29 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card className='bg-zinc-900/90'>
+      <Card className='border-amber-200/50 bg-amber-50/90'>
         <CardHeader className='text-center'>
-          <CardTitle className='text-xl text-zinc-100'>Welcome back</CardTitle>
-          <CardDescription className='text-zinc-400'>Login with your Google account</CardDescription>
+          <CardTitle className='text-xl text-amber-900'>Welcome back</CardTitle>
+          <CardDescription className='text-amber-700'>Login with your Google account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleLogin}>
             <div className='grid gap-6'>
               <Button
-                variant='outline'
-                className='w-full border-0 bg-zinc-700 text-zinc-200 hover:bg-zinc-700 hover:text-zinc-100'
+                variant='default'
+                className='w-full !border-amber-300 !bg-slate-800 !text-slate-100 hover:cursor-pointer hover:!border-amber-400 hover:!bg-slate-700'
                 onClick={handleGoogleLogin}
                 type='button'
               >
                 <Image src='/images/logo/google.png' alt='Google Icon' width={14} height={14} />
                 Login with Google
               </Button>
-              <div className='relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-0 after:border-t'>
-                <span className='relative z-10 bg-zinc-900 px-2 text-zinc-500'>Or continue with</span>
+              <div className='relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-amber-300'>
+                <span className='relative z-10 bg-amber-50 px-2 text-amber-600'>Or continue with</span>
               </div>
               <div className='grid gap-6'>
                 <div className='flex flex-col gap-2'>
-                  <Label htmlFor='email' className='text-zinc-300'>
+                  <Label htmlFor='email' className='font-medium text-slate-700'>
                     Email
                   </Label>
                   <Input
@@ -71,11 +84,11 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className='border-0 bg-zinc-700/80 text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-400 focus:ring-zinc-400'
+                    className='border-amber-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-amber-500 focus:ring-amber-500/20'
                   />
                 </div>
                 <div className='flex flex-col gap-2'>
-                  <Label htmlFor='password' className='text-zinc-300'>
+                  <Label htmlFor='password' className='font-medium text-slate-700'>
                     Password
                   </Label>
                   <Input
@@ -86,10 +99,15 @@ const LoginForm = ({ className, ...props }: React.ComponentProps<'div'>) => {
                     required
                     value={formData.password}
                     onChange={handleInputChange}
-                    className='border-0 bg-zinc-700/80 text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-400 focus:ring-zinc-400'
+                    className='border-amber-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-amber-500 focus:ring-amber-500/20'
                   />
                 </div>
-                <Button type='submit' className='w-full' onClick={handleLogin} disabled={isLoginLoading}>
+                {error && <div className='rounded-md bg-red-50 p-3 text-sm text-red-600'>{error}</div>}
+                <Button
+                  type='submit'
+                  className='w-full bg-amber-600 text-white hover:bg-amber-700'
+                  disabled={isLoginLoading}
+                >
                   {isLoginLoading ? 'Logging in...' : 'Login'}
                 </Button>
               </div>

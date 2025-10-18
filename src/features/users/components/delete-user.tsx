@@ -53,7 +53,7 @@ const DeleteUser = ({ user, onSuccess, open, onOpenChange }: DeleteUserProps) =>
         <DialogHeader>
           <DialogTitle>Delete User</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete <strong>{user.name}</strong>? This action cannot be undone.
+            Are you sure you want to delete <strong>{user.fullname}</strong>? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

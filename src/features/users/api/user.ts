@@ -7,7 +7,7 @@ import { IUser, IUserQuery } from '@/types/users'
 
 export const useUsers = (params: IUserQuery) => {
   const { data, isLoading, isFetched, isError, error, refetch } = useQuery({
-    queryKey: [`users/${params.role}`, params],
+    queryKey: [`users`, params],
     queryFn: async (): Promise<IDataWithMetadata<IUser[]>> => {
       const response = await service.get('/users', params)
 
