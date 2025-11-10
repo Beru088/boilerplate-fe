@@ -17,7 +17,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Plus, Loader2 } from 'lucide-react'
-import { useCreateUser } from '@/features/users/api/user-mutation'
+import { useCreateUser } from '@/features/user-management/api/user-mutation'
 import { toast } from 'sonner'
 import { useAuth } from '@/lib/auth'
 

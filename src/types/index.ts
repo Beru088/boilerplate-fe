@@ -74,3 +74,16 @@ export enum UserStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive'
 }
+
+export interface IMenu {
+  id: number
+  parentId?: number
+  name: string
+  code: string
+  embedUrl?: string
+  provider?: string
+  icon?: string
+  order: number
+  isActive: boolean
+  children: IMenu[]
+}

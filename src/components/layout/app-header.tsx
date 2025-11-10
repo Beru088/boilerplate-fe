@@ -15,7 +15,7 @@ const AppHeader = () => {
   }
 
   return (
-    <header className='flex h-16 shrink-0 items-center gap-2 border-b px-10 py-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
+    <header className='flex shrink-0 items-center border-b px-10 py-3 transition-[width,height] ease-linear'>
       <div className='flex flex-1 items-center justify-between'>
         <div className='flex items-center gap-2'>
           <div className='flex flex-col gap-1'>

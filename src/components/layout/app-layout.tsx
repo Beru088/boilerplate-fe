@@ -8,7 +8,7 @@ const AppGroupLayout = ({ children }: { children: React.ReactNode }) => {
       <AppSidebar />
       <SidebarInset className='flex flex-col overflow-hidden'>
         <AppHeader />
-        <div className='flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden p-4 pt-0'>{children}</div>
+        <div className='flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-4'>{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )

@@ -22,7 +22,7 @@ const RoleGuard = ({
   fallback,
   fullScreen = true
 }: RoleGuardProps) => {
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { user, isAuthenticated, isLoading, logout } = useAuth()
   const router = useRouter()
 
   const hasAccess = (user: any, requireAdmin: boolean) => {
@@ -34,9 +34,8 @@ const RoleGuard = ({
     router.push(redirectTo)
   }
 
-  const handleGoHome = () => {
-    // Redirect to dashboard for all users
-    router.push('/dashboard')
+  const handleGoToLogin = () => {
+    logout()
   }
 
   const containerClass = fullScreen ? 'min-h-screen' : 'h-full w-full'
@@ -66,7 +65,7 @@ const RoleGuard = ({
             <p className='text-muted-foreground'>
               You need to be signed in to access this page. Please log in with your account credentials.
             </p>
-            <Button onClick={handleGoBack} className='flex-1'>
+            <Button onClick={handleGoToLogin} className='flex-1'>
               <ArrowLeft className='mr-2 h-4 w-4' />
               Back to Login
             </Button>
@@ -97,7 +96,7 @@ const RoleGuard = ({
                   <ArrowLeft className='mr-2 h-4 w-4' />
                   Back
                 </Button>
-                <Button onClick={handleGoHome} className='flex-1'>
+                <Button onClick={handleGoToLogin} className='flex-1'>
                   <Home className='mr-2 h-4 w-4' />
                   Back to Login
                 </Button>

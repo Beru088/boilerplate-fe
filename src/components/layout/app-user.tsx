@@ -36,8 +36,8 @@ export function AppUser({ user }: { user: IUser }) {
   const isCollapsed = state === 'collapsed'
 
   return (
-    <div className='flex w-full items-center gap-4'>
-      <Avatar className='h-[53px] w-[53px] shrink-0 rounded-full'>
+    <div className={`flex w-full items-center ${isCollapsed ? 'justify-center' : 'gap-4'}`}>
+      <Avatar className={`shrink-0 rounded-full ${isCollapsed ? 'h-12 w-12' : 'h-[53px] w-[53px]'}`}>
         <AvatarImage src='/images/avatar/default-user.png' alt={user.fullname} />
         <AvatarFallback className='rounded-full text-xs'>
           {user.fullname
@@ -49,9 +49,9 @@ export function AppUser({ user }: { user: IUser }) {
       </Avatar>
 
       {!isCollapsed && (
-        <div className='flex flex-1 flex-col gap-1'>
-          <p className='text-sm font-medium'>{user.fullname}</p>
-          <p className='text-muted-foreground text-xs'>{user.email}</p>
+        <div className='flex min-w-0 flex-1 flex-col gap-1'>
+          <p className='truncate text-[16px] font-bold'>{user.fullname}</p>
+          <p className='text-muted-foreground truncate text-xs font-[600]'>{user.email}</p>
           <p className='text-muted-foreground text-xs'>{user.isAdmin ? 'Admin' : 'User'}</p>
         </div>
       )}
